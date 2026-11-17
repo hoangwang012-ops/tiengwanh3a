@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="vi" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Luyện Phản Xạ Chat Tiếng Anh Bằng Giọng Nói</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0f7ff 0%, #e6eeff 50%, #f3e8ff 100%);
+            min-height: 100vh;+
+            color: #1e293b;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Hiệu ứng sóng âm khi Micro đang tự động lắng nghe */
+        @keyframes micWave {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 18px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        .mic-listening {
+            animation: micWave 1.4s infinite;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+            color: #ffffff !important;
+        }
+
+        /* Hiệu ứng sóng âm khi Máy đang nói */
+        @keyframes aiSpeak {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+        }
+        .ai-speaking {
+            animation: aiSpeak 0.9s infinite ease-in-out;
+            border-color: #2563eb !important;
+            box-shadow: 0 0 20px rgba(37, 99, 235, 0.25);
+        }
+
+        /* Hiệu ứng bật nảy thông báo CORRECT / INCORRECT */
+        @keyframes bannerPop {
+            0% { transform: scale(0.65); opacity: 0; }
+            70% { transform: scale(1.06); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .banner-pop {
+            animation: bannerPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        /* Thanh cuộn mượt cho khung lịch sử hội thoại */
+        .chat-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .chat-scroll::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="pb-12">
+
+    <!-- HEADER CỐ ĐỊNH PHÍA TRÊN -->
+    <header class="bg-white/95 backdrop-blur-md sticky top-0 z-40 border-b border-indigo-100 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+            <!-- Thương hiệu -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white text-xl shadow-md">
+                        <i class="fa-solid fa-headset"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg sm:text-xl font-extrabold text-slate-800 tracking-tight leading-tight">
+                            AI VOICE <span class="text-blue-600">ENGLISH CHAT</span>
+                        </h1>
+                        <p class="text-xs text-slate-500 font-medium">Luyện Phản Xạ Giao Tiếp Bằng Giọng Nói</p>
+                    </div>
+                </div>
+
+                <!-- Điểm trên Mobile -->
+                <div class="lg:hidden flex items-center gap-1.5 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-full">
+                    <i class="fa-solid fa-star text-amber-500 text-xs"></i>
+                    <span class="text-xs font-bold text-amber-800" id="mobile-score">0 điểm</span>
+                </div>
+            </div>
+
+            <!-- Thanh chuyển đổi 3 khu vực chính -->
+            <nav class="flex bg-slate-100 p-1 rounded-xl w-full lg:w-auto overflow-x-auto">
+                <button onclick="switchMainView('mode2')" id="nav-mode2" class="flex-1 lg:flex-none px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all bg-white text-blue-600 shadow-sm flex items-center justify-center gap-1.5 whitespace-nowrap">
+                    <i class="fa-solid fa-bolt"></i> 2. Máy Hỏi - Phản Xạ
+                </button>
+                <button onclick="switchMainView('mode1')" id="nav-mode1" class="flex-1 lg:flex-none px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 whitespace-nowrap">
+                    <i class="fa-solid fa-comments"></i> 1. Người Hỏi - Máy Đáp
+                </button>
+                <button onclick="switchMainView('bank')" id="nav-bank" class="flex-1 lg:flex-none px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 whitespace-nowrap">
+                    <i class="fa-solid fa-book-open"></i> Kho Câu Đời Tư
+                </button>
+            </nav>
+
+            <!-- Điểm trên Desktop -->
+            <div class="hidden lg:flex items-center gap-2 bg-amber-50 border border-amber-200 px-4 py-2 rounded-full shadow-inner">
+                <i class="fa-solid fa-trophy text-amber-500"></i>
+                <span class="text-sm font-bold text-amber-800" id="desktop-score">0 điểm</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- NỘI DUNG CHÍNH -->
+    <main class="max-w-5xl mx-auto px-4 pt-5 space-y-5">
+
+        <!-- THANH CẤU HÌNH GIỌNG ĐỌC & ÂM THANH -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-indigo-100 grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+            <!-- Chọn giọng đọc -->
+            <div class="lg:col-span-5 flex flex-col sm:flex-row sm:items-center gap-2">
+                <label for="voice-select" class="text-xs font-extrabold uppercase tracking-wider text-blue-700 flex items-center gap-1.5 shrink-0">
+                    <i class="fa-solid fa-earth-americas text-base"></i> Giọng Máy:
+                </label>
+                <select id="voice-select" class="w-full bg-blue-50/60 border border-blue-200 text-slate-800 text-sm rounded-xl px-3 py-2 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="default">Đang nạp giọng tiếng Anh...</option>
+                </select>
+            </div>
+
+            <!-- Thanh trượt tốc độ nói -->
+            <div class="lg:col-span-4 flex items-center gap-2.5 bg-emerald-50/70 border border-emerald-200 rounded-xl px-3 py-2">
+                <span class="text-xs font-extrabold text-emerald-800 whitespace-nowrap">
+                    <i class="fa-solid fa-gauge-high text-emerald-600"></i> Tốc độ:
+                </span>
+                <input type="range" id="rate-slider" min="0.6" max="1.4" step="0.05" value="0.95"
+                       oninput="updateRateLabel(this.value)"
+                       class="w-full accent-emerald-600 cursor-pointer h-2 bg-emerald-200 rounded-lg">
+                <span id="rate-badge" class="bg-emerald-600 text-white text-xs font-extrabold px-2 py-0.5 rounded-lg min-w-[46px] text-center">
+                    0.95x
+                </span>
+            </div>
+
+            <!-- Nút thử tiếng Chuông / Còi -->
+            <div class="lg:col-span-3 flex items-center justify-end gap-2">
+                <button onclick="playBellCorrect()" class="flex-1 py-2 px-2.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1" title="Nghe thử tiếng chuông báo đúng">
+                    <i class="fa-solid fa-bell"></i> Chuông Đúng
+                </button>
+                <button onclick="playBuzzerIncorrect()" class="flex-1 py-2 px-2.5 bg-rose-100 hover:bg-rose-200 text-rose-800 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1" title="Nghe thử tiếng è báo sai">
+                    <i class="fa-solid fa-volume-xmark"></i> Tiếng "È"
+                </button>
+            </div>
+        </div>
+
+        <!-- THANH CHỌN CHỦ ĐỀ & CẢNH BÁO TRÌNH DUYỆT -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-indigo-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5">
+                <span class="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
+                    <i class="fa-solid fa-user-tag"></i>
+                </span>
+                <div>
+                    <span class="text-[11px] font-extrabold uppercase tracking-wider text-indigo-600 block">Chủ đề đang luyện tập</span>
+                    <select id="topic-selector" onchange="onTopicChange(this.value)" class="text-sm sm:text-base font-extrabold text-slate-800 bg-transparent focus:outline-none cursor-pointer">
+                        <option value="personal_life">Chủ đề 1: ĐỜI TƯ (Tên, Tuổi, Nghề, Gia đình, Sở thích...)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="browser-support-badge" class="text-xs font-semibold px-3 py-1.5 rounded-xl bg-blue-50 text-blue-700 border border-blue-200 flex items-center gap-1.5">
+                <i class="fa-solid fa-microphone"></i> Sẵn sàng nhận diện giọng nói tiếng Anh
+            </div>
+        </div>
+
+        <!-- =====================================================================
+             CHẾ ĐỘ 2 (MẶC ĐỊNH): MÁY HỎI - NGƯỜI TRẢ LỜI PHẢN XẠ (RẢNH TAY 100%)
+             ===================================================================== -->
+        <section id="view-mode2" class="space-y-5">
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-lg border border-indigo-100">
+                <!-- Tiêu đề & Nút Bắt đầu / Dừng phiên rảnh tay -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-100">
+                    <div>
+                        <span class="text-xs font-extrabold uppercase tracking-wider text-purple-600 bg-purple-50 px-3 py-1 rounded-full">
+                            Chế Độ 2 • Rảnh Tay Không Cần Bấm Nút Từng Câu
+                        </span>
+                        <h2 class="text-xl font-extrabold text-slate-800 mt-2">Máy Hỏi Ngẫu Nhiên — Bạn Trả Lời Phản Xạ</h2>
+                        <p class="text-xs text-slate-500 mt-0.5">Máy đọc câu hỏi xong sẽ <b>tự động bật Micro</b> để nghe bạn trả lời, chấm điểm và tự chuyển câu tiếp theo.</p>
+                    </div>
+
+                    <div class="flex items-center gap-2 shrink-0">
+                        <button id="btn-start-reflex" onclick="startReflexSession()" class="px-5 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold rounded-2xl shadow-md transition flex items-center gap-2">
+                            <i class="fa-solid fa-play"></i> Bắt Đầu Phản Xạ
+                        </button>
+                        <button id="btn-stop-reflex" onclick="stopAllSessions()" class="hidden px-5 py-3.5 bg-slate-700 hover:bg-slate-800 text-white font-extrabold rounded-2xl shadow-md transition flex items-center gap-2">
+                            <i class="fa-solid fa-stop"></i> Dừng Lại
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Khu vực hiển thị câu hỏi của Máy -->
+                <div class="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                    <!-- Avatar Máy & Trạng thái -->
+                    <div class="lg:col-span-4 flex flex-col items-center text-center p-5 rounded-2xl bg-slate-50 border border-slate-200/80" id="ai-box-mode2">
+                        <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 text-white flex items-center justify-center text-3xl shadow-lg mb-3">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <span id="reflex-status-pill" class="px-3 py-1 rounded-full text-xs font-extrabold bg-slate-200 text-slate-700">
+                            Đang chờ bấm Bắt Đầu
+                        </span>
+                        <div class="mt-4 flex items-center gap-2">
+                            <button onclick="repeatCurrentReflexQuestion()" class="px-3 py-1.5 bg-white border border-slate-200 hover:bg-blue-50 text-blue-700 rounded-xl text-xs font-bold shadow-sm transition">
+                                <i class="fa-solid fa-volume-high mr-1"></i> Nghe lại câu hỏi
+                            </button>
+                            <button onclick="skipToNextReflexQuestion()" class="px-3 py-1.5 bg-white border border-slate-200 hover:bg-slate-100 text-slate-600 rounded-xl text-xs font-bold shadow-sm transition">
+                                <i class="fa-solid fa-forward-step mr-1"></i> Câu khác
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Nội dung Câu hỏi & Gợi ý trả lời -->
+                    <div class="lg:col-span-8 space-y-4">
+                        <div class="bg-blue-50/70 border border-blue-200 rounded-2xl p-5">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span id="reflex-category-tag" class="text-[11px] font-extrabold uppercase tracking-wider text-blue-700 bg-blue-100 px-2.5 py-0.5 rounded-md">
+                                    Chủ đề: Đời tư
+                                </span>
+                                <label class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 cursor-pointer">
+                                    <input type="checkbox" id="toggle-hint-checkbox" checked onchange="toggleReflexHintVisibility()" class="rounded text-blue-600">
+                                    Hiện gợi ý câu trả lời
+                                </label>
+                            </div>
+
+                            <p id="reflex-question-en" class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-2">
+                                Bấm "Bắt Đầu Phản Xạ" để Máy đặt câu hỏi đầu tiên!
+                            </p>
+                            <p id="reflex-question-vi" class="text-sm font-semibold text-slate-600 mt-1">
+                                Máy sẽ tự động bật micro ngay sau khi đọc xong câu hỏi.
+                            </p>
+                        </div>
+
+                        <!-- Khung Gợi ý mẫu câu trả lời -->
+                        <div id="reflex-hint-box" class="bg-amber-50/70 border border-amber-200/80 rounded-2xl p-4">
+                            <p class="text-xs font-extrabold uppercase tracking-wider text-amber-800 mb-1">
+                                <i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i> Gợi ý mẫu trả lời tiếng Anh:
+                            </p>
+                            <p id="reflex-sample-en" class="text-sm sm:text-base font-bold text-slate-800">
+                                "My name is..." / "I am ... years old."
+                            </p>
+                            <p id="reflex-sample-vi" class="text-xs text-slate-500 mt-0.5">
+                                (Bạn có thể trả lời tự do theo thông tin thật của bản thân bằng tiếng Anh)
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KHUNG KẾT QUẢ PHẢN XẠ: HIỆN CHỮ CORRECT (XANH LÁ) HOẶC INCORRECT (ĐỎ) -->
+                <div id="reflex-feedback-banner" class="hidden mt-6 rounded-3xl p-6 text-center border-2 shadow-md">
+                    <div id="reflex-verdict-title" class="text-3xl sm:text-4xl font-black tracking-wide mb-2">
+                        CORRECT!
+                    </div>
+                    <p id="reflex-heard-transcript" class="text-sm sm:text-base font-bold mb-1">
+                        Bạn đã nói: "..."
+                    </p>
+                    <p id="reflex-feedback-detail" class="text-xs sm:text-sm font-medium opacity-90"></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             CHẾ ĐỘ 1: NGƯỜI HỎI - MÁY TRẢ LỜI (TỰ ĐỘNG NGHE & ĐÁP)
+             ===================================================================== -->
+        <section id="view-mode1" class="hidden space-y-5">
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-lg border border-indigo-100">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-100">
+                    <div>
+                        <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full">
+                            Chế Độ 1 • Giao Tiếp Chủ Động
+                        </span>
+                        <h2 class="text-xl font-extrabold text-slate-800 mt-2">Bạn Hỏi Tiếng Anh — Máy Trả Lời Tự Nhiên</h2>
+                        <p class="text-xs text-slate-500 mt-0.5">Bạn có thể đọc câu gợi ý ngẫu nhiên hoặc tự đặt câu hỏi bất kỳ về Đời tư cho Máy.</p>
+                    </div>
+
+                    <div class="flex items-center gap-2 shrink-0">
+                        <button id="btn-start-ask" onclick="startUserAskSession()" class="px-5 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-extrabold rounded-2xl shadow-md transition flex items-center gap-2">
+                            <i class="fa-solid fa-microphone"></i> Bật Micro Hỏi Máy
+                        </button>
+                        <button id="btn-stop-ask" onclick="stopAllSessions()" class="hidden px-5 py-3.5 bg-slate-700 hover:bg-slate-800 text-white font-extrabold rounded-2xl shadow-md transition flex items-center gap-2">
+                            <i class="fa-solid fa-stop"></i> Dừng Micro
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Gợi ý câu hỏi ngẫu nhiên cho Người dùng -->
+                <div class="mt-5 bg-indigo-50/70 border border-indigo-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <span class="text-[11px] font-extrabold uppercase tracking-wider text-indigo-700 block mb-1">
+                            <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Gợi ý câu hỏi ngẫu nhiên bạn có thể hỏi Máy:
+                        </span>
+                        <p id="mode1-prompt-en" class="text-base sm:text-lg font-extrabold text-slate-900">
+                            "What is your name and how old are you?"
+                        </p>
+                        <p id="mode1-prompt-vi" class="text-xs font-medium text-slate-600">
+                            (Tên bạn là gì và bạn bao nhiêu tuổi?)
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <button onclick="speakMode1Prompt()" class="px-3.5 py-2 bg-white border border-indigo-200 hover:bg-indigo-100 text-indigo-700 rounded-xl text-xs font-bold transition">
+                            <i class="fa-solid fa-volume-high mr-1"></i> Nghe mẫu
+                        </button>
+                        <button onclick="pickRandomMode1Prompt()" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition">
+                            <i class="fa-solid fa-shuffle mr-1"></i> Đổi câu hỏi
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Khung lịch sử hội thoại Chat -->
+                <div id="mode1-chat-history" class="mt-5 bg-slate-50 border border-slate-200/80 rounded-2xl p-4 h-80 overflow-y-auto chat-scroll space-y-3">
+                    <div class="flex items-start gap-2.5">
+                        <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs shrink-0 mt-1">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <div class="bg-white border border-slate-200 rounded-2xl rounded-tl-none px-4 py-2.5 shadow-sm max-w-[85%]">
+                            <p class="text-sm font-bold text-slate-800">Hello! Ask me anything about my personal life, family, job, or hobbies!</p>
+                            <p class="text-xs text-slate-500 mt-0.5">Xin chào! Hãy bấm "Bật Micro Hỏi Máy" và hỏi tôi bất cứ điều gì về đời tư, gia đình, nghề nghiệp hay sở thích nhé!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trạng thái Micro Chế độ 1 -->
+                <div class="mt-4 flex items-center justify-between text-xs font-semibold text-slate-500">
+                    <span id="mode1-mic-status"><i class="fa-solid fa-circle text-slate-300 mr-1.5"></i> Micro đang tắt</span>
+                    <button onclick="clearMode1Chat()" class="text-slate-400 hover:text-rose-600 transition">
+                        <i class="fa-solid fa-trash-can mr-1"></i> Xóa lịch sử chat
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             KHO CÂU MẪU SOẠN SẴN CHỦ ĐỀ ĐỜI TƯ (ĐỂ ÔN TẬP & NGHE TRƯỚC)
+             ===================================================================== -->
+        <section id="view-bank" class="hidden space-y-4">
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-indigo-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                    <h2 class="text-lg font-extrabold text-slate-800">Bộ Câu Hỏi & Trả Lời Mẫu Chủ Đề: ĐỜI TƯ</h2>
+                    <p class="text-xs text-slate-500">Bao gồm đầy đủ: Tên, tuổi, nghề nghiệp, quê quán, nơi sống, hôn nhân, con cái, sống cùng ai, anh chị em, sở thích.</p>
+                </div>
+                <span id="bank-count-badge" class="text-xs font-extrabold bg-blue-100 text-blue-700 px-3 py-1.5 rounded-full self-start sm:self-center">
+                    18 mẫu hội thoại
+                </span>
+            </div>
+
+            <div id="bank-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </section>
+
+    </main>
+
+    <script>
+        // =========================================================================
+        // 1. KHO DỮ LIỆU CHỦ ĐỀ ĐỜI TƯ (SOẠN SẴN ĐẦY ĐỦ TẤT CẢ CÁC Ý BẠN YÊU CẦU)
+        // =========================================================================
+        const CONVERSATION_TOPICS = {
+            personal_life: {
+                id: "personal_life",
+                title: "Đời tư (Personal Life)",
+                items: [
+                    // 1. Tên (Name)
+                    {
+                        id: 1,
+                        subTopic: "Tên (Name)",
+                        qEn: "What is your full name?",
+                        qVi: "Tên đầy đủ của bạn là gì?",
+                        aEn: "My full name is Alex Nguyen, or you can just call me Alex.",
+                        aVi: "Tên đầy đủ của tôi là Alex Nguyễn, hoặc bạn cứ gọi tôi là Alex.",
+                        keywordsAsk: ["name", "who are you", "call you"],
+                        keywordsAns: ["my name", "i am", "i'm", "call me"]
+                    },
+                    // 2. Tuổi (Age)
+                    {
+                        id: 2,
+                        subTopic: "Tuổi tác (Age)",
+                        qEn: "How old are you?",
+                        qVi: "Bạn bao nhiêu tuổi rồi?",
+                        aEn: "I am thirty-two years old.",
+                        aVi: "Tôi năm nay ba mươi hai tuổi.",
+                        keywordsAsk: ["old", "age"],
+                        keywordsAns: ["years old", "i am", "i'm", "twenty", "thirty", "forty", "fifty", "sixty", "teen", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+                    },
+                    // 3. Nghề nghiệp (Occupation)
+                    {
+                        id: 3,
+                        subTopic: "Nghề nghiệp (Job)",
+                        qEn: "What do you do for a living?",
+                        qVi: "Bạn làm nghề gì để kiếm sống?",
+                        aEn: "I work as a high school English teacher.",
+                        aVi: "Tôi làm giáo viên dạy tiếng Anh ở trường trung học phổ thông.",
+                        keywordsAsk: ["do you do", "job", "occupation", "work", "living"],
+                        keywordsAns: ["i am a", "i am an", "i'm a", "i'm an", "work as", "work in", "work for", "teacher", "engineer", "doctor", "student", "nurse", "worker", "business", "farmer", "driver", "retired", "manager", "staff"]
+                    },
+                    {
+                        id: 4,
+                        subTopic: "Nơi làm việc (Workplace)",
+                        qEn: "Where do you work and do you enjoy your job?",
+                        qVi: "Bạn làm việc ở đâu và bạn có thích công việc của mình không?",
+                        aEn: "I work at a local company downtown, and I really enjoy my job.",
+                        aVi: "Tôi làm việc tại một công ty ở trung tâm thành phố và tôi rất thích công việc này.",
+                        keywordsAsk: ["where do you work", "enjoy your job", "like your job"],
+                        keywordsAns: ["i work", "company", "school", "hospital", "office", "home", "yes", "love", "enjoy", "like"]
+                    },
+                    // 4. Từ đâu đến / Quê quán (Origin / Hometown)
+                    {
+                        id: 5,
+                        subTopic: "Quê quán (Origin)",
+                        qEn: "Where are you originally from?",
+                        qVi: "Quê gốc của bạn ở đâu / Bạn từ đâu đến?",
+                        aEn: "I am originally from Dak Lak, a beautiful province in the Central Highlands of Vietnam.",
+                        aVi: "Quê gốc của tôi ở Đắk Lắk, một tỉnh xinh đẹp ở vùng Tây Nguyên Việt Nam.",
+                        keywordsAsk: ["from", "hometown", "born", "come from"],
+                        keywordsAns: ["i am from", "i'm from", "from", "hometown", "vietnam", "province", "city"]
+                    },
+                    // 5. Nơi sống hiện tại (Current Residence)
+                    {
+                        id: 6,
+                        subTopic: "Nơi sống hiện tại (Current Residence)",
+                        qEn: "Where do you live now?",
+                        qVi: "Hiện tại bạn đang sinh sống ở đâu?",
+                        aEn: "I currently live in a peaceful neighborhood in Ho Chi Minh City.",
+                        aVi: "Hiện tại tôi đang sống ở một khu dân cư yên tĩnh tại Thành phố Hồ Chí Minh.",
+                        keywordsAsk: ["live now", "where do you live", "address", "staying"],
+                        keywordsAns: ["i live", "living", "in", "city", "town", "village", "district", "street", "apartment", "house"]
+                    },
+                    // 6. Lập gia đình hay chưa (Marital Status)
+                    {
+                        id: 7,
+                        subTopic: "Tình trạng hôn nhân (Marital Status)",
+                        qEn: "Are you married or still single?",
+                        qVi: "Bạn đã lập gia đình hay vẫn còn độc thân?",
+                        aEn: "I am happily married. My spouse and I got married six years ago.",
+                        aVi: "Tôi đã lập gia đình và rất hạnh phúc. Vợ chồng tôi cưới nhau được sáu năm rồi.",
+                        keywordsAsk: ["married", "single", "marital", "wife", "husband", "spouse"],
+                        keywordsAns: ["married", "single", "have a wife", "have a husband", "not yet", "divorced", "yes", "no"]
+                    },
+                    // 7. Có con chưa? Bao nhiêu tuổi? Làm nghề gì? (Children, Ages & Jobs)
+                    {
+                        id: 8,
+                        subTopic: "Con cái (Children)",
+                        qEn: "Do you have any children?",
+                        qVi: "Bạn đã có con chưa?",
+                        aEn: "Yes, I have two wonderful children, a son and a daughter.",
+                        aVi: "Vâng, tôi có hai người con tuyệt vời, một trai và một gái.",
+                        keywordsAsk: ["have any children", "have kids", "any kids", "children"],
+                        keywordsAns: ["yes", "no", "i have", "son", "daughter", "children", "kids", "don't have"]
+                    },
+                    {
+                        id: 9,
+                        subTopic: "Tuổi & Nghề của con (Children's Ages & Jobs)",
+                        qEn: "How old are your children and what do they do?",
+                        qVi: "Các con của bạn bao nhiêu tuổi và chúng đang làm gì?",
+                        aEn: "My son is twenty-four and works as an IT engineer, and my daughter is nineteen and is a university student.",
+                        aVi: "Con trai tôi 24 tuổi và làm kỹ sư công nghệ thông tin, còn con gái tôi 19 tuổi đang là sinh viên đại học.",
+                        keywordsAsk: ["old are your children", "children do", "kids do", "son", "daughter"],
+                        keywordsAns: ["son", "daughter", "years old", "student", "school", "university", "works", "engineer", "doctor", "teacher", "child", "don't have"]
+                    },
+                    // 8. Đang sống với ai (Who do you live with)
+                    {
+                        id: 10,
+                        subTopic: "Đang sống cùng ai (Living Companions)",
+                        qEn: "Who are you living with right now?",
+                        qVi: "Hiện tại bạn đang sống chung với ai?",
+                        aEn: "I live with my parents, my wife, and our two kids in a big house.",
+                        aVi: "Tôi đang sống cùng bố mẹ, vợ tôi và hai con nhỏ trong một ngôi nhà lớn.",
+                        keywordsAsk: ["who do you live", "living with", "live alone"],
+                        keywordsAns: ["i live with", "live alone", "parents", "family", "wife", "husband", "children", "kids", "friends", "mother", "father"]
+                    },
+                    // 9. Có anh chị em không? Số lượng? Làm nghề gì? (Siblings, Count & Jobs)
+                    {
+                        id: 11,
+                        subTopic: "Anh chị em & Số lượng (Siblings)",
+                        qEn: "Do you have any brothers or sisters? How many?",
+                        qVi: "Bạn có anh chị em ruột không? Có bao nhiêu người?",
+                        aEn: "Yes, I come from a big family. I have one older brother and two younger sisters.",
+                        aVi: "Có, tôi sinh ra trong một gia đình đông con. Tôi có một anh trai và hai em gái.",
+                        keywordsAsk: ["brothers or sisters", "siblings", "how many"],
+                        keywordsAns: ["yes", "no", "brother", "sister", "only child", "one", "two", "three", "i have"]
+                    },
+                    {
+                        id: 12,
+                        subTopic: "Nghề nghiệp của anh chị em (Siblings' Jobs)",
+                        qEn: "What do your brothers and sisters do for a living?",
+                        qVi: "Anh chị em của bạn đang làm nghề gì?",
+                        aEn: "My older brother is a doctor at a city hospital, and my younger sister is an accountant.",
+                        aVi: "Anh trai tôi là bác sĩ tại một bệnh viện thành phố, còn em gái tôi là kế toán.",
+                        keywordsAsk: ["brothers and sisters do", "brother do", "sister do", "siblings do"],
+                        keywordsAns: ["brother", "sister", "is a", "works as", "teacher", "doctor", "nurse", "engineer", "student", "business", "worker", "only child"]
+                    },
+                    // 10. Sở thích (Hobbies)
+                    {
+                        id: 13,
+                        subTopic: "Sở thích lúc rảnh (Hobbies)",
+                        qEn: "What are your hobbies in your free time?",
+                        qVi: "Sở thích của bạn vào thời gian rảnh rỗi là gì?",
+                        aEn: "In my free time, I love reading books, listening to music, and playing badminton.",
+                        aVi: "Vào thời gian rảnh, tôi thích đọc sách, nghe nhạc và chơi cầu lông.",
+                        keywordsAsk: ["hobbies", "free time", "spare time", "like doing"],
+                        keywordsAns: ["i like", "i love", "my hobby", "hobbies", "reading", "music", "watching", "playing", "traveling", "cooking", "sports", "football", "badminton", "swimming"]
+                    },
+                    {
+                        id: 14,
+                        subTopic: "Thể thao & Giải trí (Sports & Leisure)",
+                        qEn: "Do you like playing sports or traveling?",
+                        qVi: "Bạn có thích chơi thể thao hay đi du lịch không?",
+                        aEn: "Yes, I really enjoy traveling to new places and jogging every morning to stay healthy.",
+                        aVi: "Có, tôi rất thích đi du lịch đến những vùng đất mới và chạy bộ mỗi sáng để giữ sức khỏe.",
+                        keywordsAsk: ["sports", "traveling", "travel", "exercise"],
+                        keywordsAns: ["yes", "i like", "i love", "enjoy", "sport", "travel", "jogging", "walking", "gym", "no"]
+                    }
+                ]
+            }
+        };
+
+        // =========================================================================
+        // 2. BIẾN TRẠNG THÁI TOÀN CỤC & WEB AUDIO API (CHUÔNG ĐÚNG / CÒI SAI)
+        // =========================================================================
+        let totalScore = 0;
+        let availableVoices = [];
+        let audioCtx = null;
+
+        // Trạng thái nhận diện giọng nói & phiên hội thoại
+        let recognition = null;
+        let activeMode = null; // null | 'mode1' | 'mode2'
+        let isRecognizing = false;
+
+        // Biến riêng cho Chế độ 2 (Máy hỏi - Phản xạ)
+        let currentReflexItem = null;
+        let reflexQueue = [];
+        let autoNextTimer = null;
+
+        // Biến riêng cho Chế độ 1 (Người hỏi - Máy đáp)
+        let currentMode1Prompt = null;
+
+        function ensureAudioContext() {
+            try {
+                if (!audioCtx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContext) audioCtx = new AudioContext();
+                }
+                if (audioCtx && audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+            } catch (e) {
+                console.warn("AudioContext init warning:", e);
+            }
+        }
+
+        // Tiếng chuông "Ting!" ngân vang báo CORRECT
+        function playBellCorrect() {
+            ensureAudioContext();
+            if (!audioCtx) return;
+            try {
+                const now = audioCtx.currentTime;
+                const freqs = [1046.50, 1318.51, 1567.98]; // Hợp âm Đô trưởng sáng (C6 - E6 - G6)
+                freqs.forEach((freq, idx) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.06);
+
+                    gain.gain.setValueAtTime(0.001, now + idx * 0.06);
+                    gain.gain.linearRampToValueAtTime(0.28, now + idx * 0.06 + 0.02);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.06 + 0.75);
+
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now + idx * 0.06);
+                    osc.stop(now + idx * 0.06 + 0.8);
+                });
+            } catch (e) {}
+        }
+
+        // Tiếng còi trầm "È..." báo INCORRECT
+        function playBuzzerIncorrect() {
+            ensureAudioContext();
+            if (!audioCtx) return;
+            try {
+                const now = audioCtx.currentTime;
+                const osc1 = audioCtx.createOscillator();
+                const osc2 = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc1.type = 'sawtooth';
+                osc2.type = 'sawtooth';
+
+                osc1.frequency.setValueAtTime(112, now);
+                osc1.frequency.linearRampToValueAtTime(88, now + 0.55);
+
+                osc2.frequency.setValueAtTime(116, now);
+                osc2.frequency.linearRampToValueAtTime(92, now + 0.55);
+
+                gain.gain.setValueAtTime(0.26, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc1.start(now);
+                osc2.start(now);
+                osc1.stop(now + 0.6);
+                osc2.stop(now + 0.6);
+            } catch (e) {}
+        }
+
+        function updateScore(points) {
+            totalScore += points;
+            const text = `${totalScore} điểm`;
+            const m = document.getElementById('mobile-score');
+            const d = document.getElementById('desktop-score');
+            if (m) m.textContent = text;
+            if (d) d.textContent = text;
+        }
+
+        function updateRateLabel(val) {
+            const badge = document.getElementById('rate-badge');
+            if (badge) badge.textContent = `${parseFloat(val).toFixed(2)}x`;
+        }
+
+        // =========================================================================
+        // 3. QUẢN LÝ GIỌNG ĐỌC MÁY (TEXT-TO-SPEECH AN TOÀN CHỐNG TREO)
+        // =========================================================================
+        function loadEnglishVoices() {
+            if (!('speechSynthesis' in window)) return;
+            try {
+                const all = window.speechSynthesis.getVoices() || [];
+                availableVoices = all.filter(v => v.lang && v.lang.toLowerCase().startsWith('en'));
+                const select = document.getElementById('voice-select');
+                if (!select) return;
+
+                if (availableVoices.length === 0) {
+                    select.innerHTML = `<option value="default">🇺🇸 Giọng Tiếng Anh Mặc Định (US/UK)</option>`;
+                    return;
+                }
+
+                select.innerHTML = availableVoices.map((v, idx) => {
+                    const flag = v.lang.includes('GB') ? '🇬🇧' : (v.lang.includes('AU') ? '🇦🇺' : '🇺🇸');
+                    return `<option value="${idx}">${flag} ${v.name} (${v.lang})</option>`;
+                }).join('');
+            } catch (e) {
+                console.warn("Voice load error:", e);
+            }
+        }
+
+        function speakText(text, onEndCallback = null) {
+            if (!('speechSynthesis' in window)) {
+                if (onEndCallback) setTimeout(onEndCallback, 500);
+                return;
+            }
+
+            try {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                const select = document.getElementById('voice-select');
+                const rateSlider = document.getElementById('rate-slider');
+
+                utterance.lang = 'en-US';
+                utterance.rate = rateSlider ? parseFloat(rateSlider.value) || 0.95 : 0.95;
+
+                if (select && availableVoices[select.value]) {
+                    utterance.voice = availableVoices[select.value];
+                    utterance.lang = availableVoices[select.value].lang;
+                }
+
+                let finished = false;
+                const done = () => {
+                    if (finished) return;
+                    finished = true;
+                    if (onEndCallback) onEndCallback();
+                };
+
+                utterance.onend = done;
+                utterance.onerror = done;
+
+                // Dự phòng an toàn nếu trình duyệt không kích hoạt onend
+                const estimatedMs = Math.max(2000, text.length * 85);
+                setTimeout(done, estimatedMs + 1500);
+
+                window.speechSynthesis.speak(utterance);
+            } catch (e) {
+                if (onEndCallback) onEndCallback();
+            }
+        }
+
+        // =========================================================================
+        // 4. NHẬN DIỆN GIỌNG NÓI NGƯỜI DÙNG (SPEECH RECOGNITION)
+        // =========================================================================
+        function initSpeechRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const badge = document.getElementById('browser-support-badge');
+
+            if (!SpeechRecognition) {
+                if (badge) {
+                    badge.className = "text-xs font-bold px-3 py-1.5 rounded-xl bg-rose-50 text-rose-700 border border-rose-200";
+                    badge.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> Trình duyệt chưa hỗ trợ Micro (Hãy dùng Chrome/Edge)`;
+                }
+                return null;
+            }
+
+            const rec = new SpeechRecognition();
+            rec.lang = 'en-US';
+            rec.continuous = false;
+            rec.interimResults = false;
+            rec.maxAlternatives = 3;
+
+            rec.onstart = () => {
+                isRecognizing = true;
+                updateMicVisualState(true);
+            };
+
+            rec.onend = () => {
+                isRecognizing = false;
+                updateMicVisualState(false);
+
+                // Nếu đang ở Chế độ 1 (Người hỏi - Máy đáp) mà chưa có kết quả hoặc vừa xong, tự bật lại mic để rảnh tay
+                if (activeMode === 'mode1' && !window.speechSynthesis.speaking) {
+                    setTimeout(() => {
+                        if (activeMode === 'mode1' && !isRecognizing && !window.speechSynthesis.speaking) {
+                            try { rec.start(); } catch (e) {}
+                        }
+                    }, 400);
+                }
+            };
+
+            rec.onerror = (event) => {
+                isRecognizing = false;
+                updateMicVisualState(false);
+                if (event.error === 'not-allowed') {
+                    stopAllSessions();
+                    showInlineAlert("Bạn cần cho phép quyền truy cập Micro trên trình duyệt để luyện nói!");
+                } else if (activeMode === 'mode2' && event.error === 'no-speech') {
+                    // Không nghe thấy tiếng -> Báo INCORRECT & tự chuyển câu
+                    handleReflexEvaluation("");
+                }
+            };
+
+            rec.onresult = (event) => {
+                const results = event.results[0];
+                const transcripts = [];
+                for (let i = 0; i < results.length; i++) {
+                    transcripts.push(results[i].transcript.trim());
+                }
+                const bestHeard = transcripts[0] || "";
+
+                if (activeMode === 'mode2') {
+                    handleReflexEvaluation(bestHeard, transcripts);
+                } else if (activeMode === 'mode1') {
+                    handleUserAskedQuestion(bestHeard);
+                }
+            };
+
+            return rec;
+        }
+
+        function updateMicVisualState(listening) {
+            const pill2 = document.getElementById('reflex-status-pill');
+            const status1 = document.getElementById('mode1-mic-status');
+
+            if (activeMode === 'mode2' && pill2) {
+                if (listening) {
+                    pill2.className = "px-4 py-1.5 rounded-full text-xs font-extrabold mic-listening";
+                    pill2.innerHTML = `<i class="fa-solid fa-microphone-lines mr-1"></i> ĐANG NGHE BẠN TRẢ LỜI...`;
+                } else {
+                    pill2.className = "px-3 py-1 rounded-full text-xs font-extrabold bg-blue-100 text-blue-800";
+                    pill2.innerHTML = `<i class="fa-solid fa-robot mr-1"></i> Máy đang xử lý / đọc`;
+                }
+            }
+
+            if (activeMode === 'mode1' && status1) {
+                if (listening) {
+                    status1.innerHTML = `<span class="inline-flex items-center gap-1.5 text-rose-600 font-extrabold"><span class="w-2.5 h-2.5 rounded-full bg-rose-600 animate-ping"></span> Micro đang mở — Hãy đặt câu hỏi tiếng Anh...</span>`;
+                } else {
+                    status1.innerHTML = `<i class="fa-solid fa-circle text-amber-400 mr-1.5"></i> Đang tạm nghỉ để Máy trả lời...`;
+                }
+            }
+        }
+
+        function stopAllSessions() {
+            activeMode = null;
+            if (autoNextTimer) clearTimeout(autoNextTimer);
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            if (recognition && isRecognizing) {
+                try { recognition.stop(); } catch (e) {}
+            }
+            isRecognizing = false;
+
+            // Reset nút Chế độ 2
+            document.getElementById('btn-start-reflex')?.classList.remove('hidden');
+            document.getElementById('btn-stop-reflex')?.classList.add('hidden');
+            const pill2 = document.getElementById('reflex-status-pill');
+            if (pill2) {
+                pill2.className = "px-3 py-1 rounded-full text-xs font-extrabold bg-slate-200 text-slate-700";
+                pill2.textContent = "Đã tạm dừng";
+            }
+
+            // Reset nút Chế độ 1
+            document.getElementById('btn-start-ask')?.classList.remove('hidden');
+            document.getElementById('btn-stop-ask')?.classList.add('hidden');
+            const status1 = document.getElementById('mode1-mic-status');
+            if (status1) {
+                status1.innerHTML = `<i class="fa-solid fa-circle text-slate-300 mr-1.5"></i> Micro đang tắt`;
+            }
+        }
+
+        // =========================================================================
+        // 5. LOGIC CHẾ ĐỘ 2: MÁY HỎI — NGƯỜI TRẢ LỜI PHẢN XẠ (KHÔNG CẦN BẤM NÚT)
+        // =========================================================================
+        function startReflexSession() {
+            ensureAudioContext();
+            stopAllSessions();
+            if (!recognition) recognition = initSpeechRecognition();
+            if (!recognition) return;
+
+            activeMode = 'mode2';
+            document.getElementById('btn-start-reflex').classList.add('hidden');
+            document.getElementById('btn-stop-reflex').classList.remove('hidden');
+
+            // Xáo trộn danh sách câu hỏi chủ đề hiện tại
+            const topicKey = document.getElementById('topic-selector')?.value || 'personal_life';
+            const items = CONVERSATION_TOPICS[topicKey].items;
+            reflexQueue = [...items].sort(() => Math.random() - 0.5);
+
+            askNextReflexQuestion();
+        }
+
+        function askNextReflexQuestion() {
+            if (activeMode !== 'mode2') return;
+            if (autoNextTimer) clearTimeout(autoNextTimer);
+
+            // Ẩn banner kết quả câu trước
+            const fb = document.getElementById('reflex-feedback-banner');
+            if (fb) fb.classList.add('hidden');
+
+            const topicKey = document.getElementById('topic-selector')?.value || 'personal_life';
+            const allItems = CONVERSATION_TOPICS[topicKey].items;
+            if (reflexQueue.length === 0) {
+                reflexQueue = [...allItems].sort(() => Math.random() - 0.5);
+            }
+
+            currentReflexItem = reflexQueue.pop();
+
+            // Cập nhật giao diện
+            document.getElementById('reflex-category-tag').textContent = `Mục: ${currentReflexItem.subTopic}`;
+            document.getElementById('reflex-question-en').textContent = currentReflexItem.qEn;
+            document.getElementById('reflex-question-vi').textContent = currentReflexItem.qVi;
+            document.getElementById('reflex-sample-en').textContent = `"${currentReflexItem.aEn}"`;
+            document.getElementById('reflex-sample-vi').textContent = `Nghĩa: ${currentReflexItem.aVi}`;
+
+            const aiBox = document.getElementById('ai-box-mode2');
+            if (aiBox) aiBox.classList.add('ai-speaking');
+
+            // Máy đọc câu hỏi -> Xong tự động mở Micro nghe Người trả lời!
+            speakText(currentReflexItem.qEn, () => {
+                if (aiBox) aiBox.classList.remove('ai-speaking');
+                if (activeMode === 'mode2' && recognition && !isRecognizing) {
+                    try {
+                        recognition.start();
+                    } catch (e) {}
+                }
+            });
+        }
+
+        function repeatCurrentReflexQuestion() {
+            if (!currentReflexItem) return;
+            if (recognition && isRecognizing) {
+                try { recognition.stop(); } catch (e) {}
+            }
+            speakText(currentReflexItem.qEn, () => {
+                if (activeMode === 'mode2' && recognition && !isRecognizing) {
+                    try { recognition.start(); } catch (e) {}
+                }
+            });
+        }
+
+        function skipToNextReflexQuestion() {
+            if (activeMode !== 'mode2') {
+                startReflexSession();
+                return;
+            }
+            if (recognition && isRecognizing) {
+                try { recognition.stop(); } catch (e) {}
+            }
+            askNextReflexQuestion();
+        }
+
+        function toggleReflexHintVisibility() {
+            const checked = document.getElementById('toggle-hint-checkbox')?.checked;
+            const box = document.getElementById('reflex-hint-box');
+            if (box) box.classList.toggle('hidden', !checked);
+        }
+
+               function handleReflexEvaluation(bestHeard, allTranscripts = []) {
+            if (activeMode !== 'mode2' || !currentReflexItem) return;
+
+            const combined = (allTranscripts.join(" ") || bestHeard).toLowerCase().replace(/[.,!?]/g, '').trim();
+            const questionClean = currentReflexItem.qEn.toLowerCase().replace(/[.,!?]/g, '').trim();
+
+            // 1. Chặn lỗi đọc lặp lại câu hỏi của máy
+            const isRepeatingQuestion = combined.includes(questionClean) || questionClean.includes(combined);
+
+            // 2. Danh sách các từ quá chung chung không được dùng để tính điểm
+            const genericWords = ["i am", "i'm", "yes", "no", "in", "i have", "my", "the", "a", "an", "is", "are"];
+
+            // 3. Lọc lấy các từ khóa đặc trưng nhất của câu hỏi hiện tại
+            const strictKeywords = currentReflexItem.keywordsAns.filter(kw => !genericWords.includes(kw.toLowerCase().trim()));
+
+            // 4. Kiểm tra câu trả lời có chứa từ khóa đặc trưng không
+            const matchedKeyword = strictKeywords.some(kw => {
+                const kwLower = kw.toLowerCase().trim();
+                if (kwLower.length <= 2) {
+                    return new RegExp(`\\b${kwLower}\\b`).test(combined);
+                }
+                return combined.includes(kwLower);
+            });
+
+            const isValidEnglishAnswer = combined.length > 0 && !isRepeatingQuestion && matchedKeyword;
+
+            const fb = document.getElementById('reflex-feedback-banner');
+            const title = document.getElementById('reflex-verdict-title');
+            const heardEl = document.getElementById('reflex-heard-transcript');
+            const detailEl = document.getElementById('reflex-feedback-detail');
+
+            fb.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-500', 'text-emerald-800', 'bg-rose-50', 'border-rose-500', 'text-rose-800', 'banner-pop');
+            void fb.offsetWidth;
+            fb.classList.add('banner-pop');
+
+            if (isValidEnglishAnswer) {
+                playBellCorrect();
+                updateScore(10);
+
+                fb.classList.add('bg-emerald-50', 'border-emerald-500', 'text-emerald-800');
+                title.className = "text-3xl sm:text-4xl font-black tracking-wide mb-2 text-emerald-600";
+                title.innerHTML = `<i class="fa-solid fa-circle-check mr-2"></i>CORRECT! (+10 điểm)`;
+                heardEl.textContent = `Bạn trả lời: "${bestHeard}"`;
+                detailEl.textContent = `Chính xác! Đang tự động chuyển sang câu hỏi tiếp theo...`;
+
+                autoNextTimer = setTimeout(() => {
+                    if (activeMode === 'mode2') askNextReflexQuestion();
+                }, 2400);
+            } else {
+                playBuzzerIncorrect();
+
+                fb.classList.add('bg-rose-50', 'border-rose-500', 'text-rose-800');
+                title.className = "text-3xl sm:text-4xl font-black tracking-wide mb-2 text-rose-600";
+                title.innerHTML = `<i class="fa-solid fa-circle-xmark mr-2"></i>INCORRECT!`;
+                heardEl.textContent = bestHeard ? `Hệ thống nghe được: "${bestHeard}"` : `Chưa nghe thấy câu trả lời của bạn.`;
+                detailEl.innerHTML = `Chưa đúng trọng tâm câu hỏi! Gợi ý chuẩn: <b>"${currentReflexItem.aEn}"</b>`;
+
+                autoNextTimer = setTimeout(() => {
+                    if (activeMode === 'mode2') askNextReflexQuestion();
+                }, 3500);
+            }
+        }
+
+        // =========================================================================
+        // 6. LOGIC CHẾ ĐỘ 1: NGƯỜI HỎI — MÁY TRẢ LỜI
+        // =========================================================================
+        function pickRandomMode1Prompt() {
+            const topicKey = document.getElementById('topic-selector')?.value || 'personal_life';
+            const items = CONVERSATION_TOPICS[topicKey].items;
+            currentMode1Prompt = items[Math.floor(Math.random() * items.length)];
+
+            document.getElementById('mode1-prompt-en').textContent = `"${currentMode1Prompt.qEn}"`;
+            document.getElementById('mode1-prompt-vi').textContent = `(${currentMode1Prompt.qVi})`;
+        }
+
+        function speakMode1Prompt() {
+            if (!currentMode1Prompt) pickRandomMode1Prompt();
+            speakText(currentMode1Prompt.qEn);
+        }
+
+        function startUserAskSession() {
+            ensureAudioContext();
+            stopAllSessions();
+            if (!recognition) recognition = initSpeechRecognition();
+            if (!recognition) return;
+
+            activeMode = 'mode1';
+            document.getElementById('btn-start-ask').classList.add('hidden');
+            document.getElementById('btn-stop-ask').classList.remove('hidden');
+
+            try {
+                recognition.start();
+            } catch (e) {}
+        }
+
+        function handleUserAskedQuestion(spokenQuestion) {
+            if (!spokenQuestion) return;
+            appendChatMessage('user', spokenQuestion, '');
+
+            const lower = spokenQuestion.toLowerCase();
+            const topicKey = document.getElementById('topic-selector')?.value || 'personal_life';
+            const items = CONVERSATION_TOPICS[topicKey].items;
+
+            // Tìm câu trả lời khớp nhất theo từ khóa câu hỏi của người dùng
+            let bestMatch = null;
+            let bestScore = 0;
+
+            items.forEach(item => {
+                let score = 0;
+                item.keywordsAsk.forEach(kw => {
+                    if (lower.includes(kw.toLowerCase())) score += 2;
+                });
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMatch = item;
+                }
+            });
+
+            // Nếu không khớp rõ từ khóa, dùng câu gợi ý hiện tại nếu người dùng đang đọc theo mẫu
+            if (!bestMatch && currentMode1Prompt) {
+                bestMatch = currentMode1Prompt;
+            } else if (!bestMatch) {
+                bestMatch = items[0];
+            }
+
+            playBellCorrect();
+            updateScore(5);
+            appendChatMessage('ai', bestMatch.aEn, bestMatch.aVi);
+
+            // Máy đọc câu trả lời, xong tự mở lại micro cho lượt hỏi tiếp theo
+            speakText(bestMatch.aEn, () => {
+                pickRandomMode1Prompt();
+                if (activeMode === 'mode1' && recognition && !isRecognizing) {
+                    try { recognition.start(); } catch (e) {}
+                }
+            });
+        }
+
+        function appendChatMessage(sender, enText, viText) {
+            const box = document.getElementById('mode1-chat-history');
+            if (!box) return;
+
+            const wrapper = document.createElement('div');
+            if (sender === 'user') {
+                wrapper.className = "flex items-start justify-end gap-2.5";
+                wrapper.innerHTML = `
+                    <div class="bg-blue-600 text-white rounded-2xl rounded-tr-none px-4 py-2.5 shadow-sm max-w-[85%]">
+                        <p class="text-sm font-bold">${enText}</p>
+                        <span class="text-[10px] text-blue-100 block mt-0.5 text-right">Bạn vừa hỏi</span>
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-slate-800 text-white flex items-center justify-center text-xs shrink-0 mt-1">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                `;
+            } else {
+                wrapper.className = "flex items-start gap-2.5";
+                wrapper.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs shrink-0 mt-1">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div class="bg-white border border-slate-200 rounded-2xl rounded-tl-none px-4 py-2.5 shadow-sm max-w-[85%]">
+                        <p class="text-sm font-bold text-slate-800">${enText}</p>
+                        ${viText ? `<p class="text-xs text-slate-500 mt-0.5">${viText}</p>` : ''}
+                    </div>
+                `;
+            }
+
+            box.appendChild(wrapper);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function clearMode1Chat() {
+            const box = document.getElementById('mode1-chat-history');
+            if (box) box.innerHTML = '';
+        }
+
+        // =========================================================================
+        // 7. KHO CÂU MẪU SOẠN SẴN & CHUYỂN TAB GIAO DIỆN
+        // =========================================================================
+        function renderBankList() {
+            const topicKey = document.getElementById('topic-selector')?.value || 'personal_life';
+            const items = CONVERSATION_TOPICS[topicKey].items;
+            const listEl = document.getElementById('bank-list');
+            const countBadge = document.getElementById('bank-count-badge');
+
+            if (countBadge) countBadge.textContent = `${items.length} mẫu hội thoại`;
+            if (!listEl) return;
+
+            listEl.innerHTML = items.map(item => `
+                <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                    <div>
+                        <span class="inline-block text-[11px] font-extrabold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-md mb-2">
+                            ${item.subTopic}
+                        </span>
+                        <div class="mb-3">
+                            <p class="text-xs font-bold text-slate-400 uppercase">Hỏi (Question):</p>
+                            <p class="text-sm font-extrabold text-slate-800">${item.qEn}</p>
+                            <p class="text-xs text-slate-500">${item.qVi}</p>
+                        </div>
+                        <div class="bg-blue-50/70 border border-blue-100 rounded-xl p-3">
+                            <p class="text-xs font-bold text-blue-600 uppercase">Đáp (Answer):</p>
+                            <p class="text-sm font-bold text-slate-800">${item.aEn}</p>
+                            <p class="text-xs text-slate-500 mt-0.5">${item.aVi}</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 mt-3 pt-2 border-t border-slate-100">
+                        <button onclick="speakText('${item.qEn.replace(/'/g, "\\'")}')" class="py-2 px-3 bg-slate-100 hover:bg-blue-600 text-slate-700 hover:text-white rounded-xl text-xs font-bold transition">
+                            <i class="fa-solid fa-volume-high mr-1"></i> Nghe Hỏi
+                        </button>
+                        <button onclick="speakText('${item.aEn.replace(/'/g, "\\'")}')" class="py-2 px-3 bg-blue-50 hover:bg-indigo-600 text-blue-700 hover:text-white rounded-xl text-xs font-bold transition">
+                            <i class="fa-solid fa-volume-high mr-1"></i> Nghe Đáp
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function switchMainView(viewName) {
+            stopAllSessions();
+            ['mode2', 'mode1', 'bank'].forEach(v => {
+                const btn = document.getElementById(`nav-${v}`);
+                const sec = document.getElementById(`view-${v}`);
+                if (btn) {
+                    btn.className = (v === viewName)
+                        ? "flex-1 lg:flex-none px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all bg-white text-blue-600 shadow-sm flex items-center justify-center gap-1.5 whitespace-nowrap"
+                        : "flex-1 lg:flex-none px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 whitespace-nowrap";
+                }
+                if (sec) sec.classList.toggle('hidden', v !== viewName);
+            });
+
+            if (viewName === 'mode1') pickRandomMode1Prompt();
+            if (viewName === 'bank') renderBankList();
+        }
+
+        function onTopicChange() {
+            stopAllSessions();
+            pickRandomMode1Prompt();
+            renderBankList();
+        }
+
+        function showInlineAlert(msg) {
+            const fb = document.getElementById('reflex-feedback-banner');
+            if (!fb) return;
+            fb.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-500');
+            fb.classList.add('bg-rose-50', 'border-rose-500', 'text-rose-800');
+            document.getElementById('reflex-verdict-title').textContent = "THÔNG BÁO MICRO";
+            document.getElementById('reflex-heard-transcript').textContent = msg;
+            document.getElementById('reflex-feedback-detail').textContent = "";
+        }
+
+        // Khởi tạo an toàn sau khi tải xong DOM (chống treo 100%)
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                loadEnglishVoices();
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.onvoiceschanged = loadEnglishVoices;
+                }
+                pickRandomMode1Prompt();
+                renderBankList();
+            } catch (err) {
+                console.error("Init error:", err);
+            }
+        });
+    </script>
+</body>
+</html>
