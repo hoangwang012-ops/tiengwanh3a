@@ -14,7 +14,7 @@
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #f0f7ff 0%, #e6eeff 50%, #f3e8ff 100%);
-            min-height: 100vh;+
+            min-height: 100vh;
             color: #1e293b;
             -webkit-tap-highlight-color: transparent;
         }
@@ -508,8 +508,155 @@
                         aVi: "Có, tôi rất thích đi du lịch đến những vùng đất mới và chạy bộ mỗi sáng để giữ sức khỏe.",
                         keywordsAsk: ["sports", "traveling", "travel", "exercise"],
                         keywordsAns: ["yes", "i like", "i love", "enjoy", "sport", "travel", "jogging", "walking", "gym", "no"]
+                    },
+                               
+                    // 11. Thói quen hàng ngày (Daily Routine)
+                    {
+                        id: 15,
+                        subTopic: "Thói quen hàng ngày (Daily Routine)",
+                        qEn: "What time do you usually wake up and go to bed?",
+                        qVi: "Bạn thường thức dậy và đi ngủ lúc mấy giờ?",
+                        aEn: "I usually wake up at six in the morning and go to bed around eleven at night.",
+                        aVi: "Tôi thường thức dậy lúc 6 giờ sáng và đi ngủ vào khoảng 11 giờ tối.",
+                        keywordsAsk: ["wake up", "get up", "go to bed", "sleep", "routine"],
+                        keywordsAns: ["wake up", "get up", "go to bed", "sleep", "morning", "night", "six", "seven", "eight", "ten", "eleven", "twelve", "o'clock", "am", "pm"]
+                    },
+                    // 12. Ẩm thực & Món ăn yêu thích (Favorite Food & Drink)
+                    {
+                        id: 16,
+                        subTopic: "Ẩm thực (Favorite Food & Drink)",
+                        qEn: "What is your favorite food and drink?",
+                        qVi: "Món ăn và thức uống yêu thích của bạn là gì?",
+                        aEn: "My favorite food is traditional Vietnamese pho, and I love drinking iced coffee.",
+                        aVi: "Món ăn yêu thích của tôi là phở truyền thống Việt Nam và tôi rất thích uống cà phê sữa đá.",
+                        keywordsAsk: ["favorite food", "favorite drink", "like to eat", "like to drink", "food", "drink"],
+                        keywordsAns: ["favorite", "like", "love", "eat", "drink", "pho", "rice", "noodles", "chicken", "beef", "fish", "vegetable", "fruit", "coffee", "tea", "water", "juice", "milk"]
+                    },
+                    // 13. Phim ảnh & Âm nhạc (Movies & Music)
+                    {
+                        id: 17,
+                        subTopic: "Giải trí (Movies & Music)",
+                        qEn: "What kind of music or movies do you like?",
+                        qVi: "Bạn thích thể loại âm nhạc hay phim ảnh nào?",
+                        aEn: "I love listening to pop music and watching action or comedy movies on weekends.",
+                        aVi: "Tôi thích nghe nhạc pop và xem phim hành động hoặc phim hài vào cuối tuần.",
+                        keywordsAsk: ["music", "movies", "films", "songs", "watch", "listen"],
+                        keywordsAns: ["music", "movie", "film", "song", "pop", "rock", "ballad", "action", "comedy", "romance", "horror", "cartoon", "like", "love", "enjoy", "watch", "listen"]
+                    },
+                    // 14. Thú cưng (Pets)
+                    {
+                        id: 18,
+                        subTopic: "Thú cưng (Pets)",
+                        qEn: "Do you have any pets at home?",
+                        qVi: "Ở nhà bạn có nuôi thú cưng nào không?",
+                        aEn: "Yes, I have a cute dog and a lazy cat at home. They are very friendly.",
+                        aVi: "Có, ở nhà tôi có nuôi một chú chó dễ thương và một chú mèo lười. Chúng rất thân thiện.",
+                        keywordsAsk: ["pets", "dog", "cat", "animals"],
+                        keywordsAns: ["pet", "pets", "dog", "cat", "bird", "fish", "rabbit", "animal", "cute", "friendly", "don't have", "no pets"]
+                    },
+                    // 15. Ngôn ngữ (Languages)
+                    {
+                        id: 19,
+                        subTopic: "Ngoại ngữ (Languages)",
+                        qEn: "How many languages can you speak?",
+                        qVi: "Bạn có thể nói được bao nhiêu ngôn ngữ?",
+                        aEn: "I can speak Vietnamese fluently, and I am practicing speaking English every day.",
+                        aVi: "Tôi có thể nói tiếng Việt trôi chảy và tôi đang luyện nói tiếng Anh mỗi ngày.",
+                        keywordsAsk: ["languages", "speak", "english", "vietnamese"],
+                        keywordsAns: ["language", "languages", "speak", "vietnamese", "english", "french", "chinese", "japanese", "korean", "one", "two", "three", "fluently", "a little", "learning", "practicing"]
+                    },
+                    // 16. Tính cách bản thân (Personality)
+                    {
+                        id: 20,
+                        subTopic: "Tính cách (Personality)",
+                        qEn: "How would you describe your personality?",
+                        qVi: "Bạn mô tả tính cách của mình như thế nào?",
+                        aEn: "I think I am a friendly, patient, and optimistic person who loves helping others.",
+                        aVi: "Tôi nghĩ mình là một người thân thiện, kiên nhẫn và lạc quan, luôn thích giúp đỡ mọi người.",
+                        keywordsAsk: ["personality", "describe yourself", "what are you like", "character"],
+                        keywordsAns: ["friendly", "kind", "patient", "optimistic", "shy", "outgoing", "funny", "hardworking", "honest", "quiet", "active", "helpful", "person", "think"]
+                    },
+                    // 17. Mục tiêu tương lai (Future Goals)
+                    {
+                        id: 21,
+                        subTopic: "Mục tiêu tương lai (Future Goals)",
+                        qEn: "What is your biggest goal or dream for the future?",
+                        qVi: "Mục tiêu hoặc ước mơ lớn nhất của bạn trong tương lai là gì?",
+                        aEn: "My biggest goal is to speak English confidently and travel around the world with my family.",
+                        aVi: "Mục tiêu lớn nhất của tôi là nói tiếng Anh tự tin và đi du lịch vòng quanh thế giới cùng gia đình.",
+                        keywordsAsk: ["goal", "dream", "future", "plan", "want to do"],
+                        keywordsAns: ["goal", "dream", "future", "plan", "want to", "hope to", "would like to", "english", "travel", "business", "job", "family", "money", "house", "healthy", "happy"]
+                    },
+
+                   
+                    // 18. Thời gian đến Việt Nam (Arrival Time)
+                    {
+                        id: 22,
+                        subTopic: "Thời gian ở Việt Nam (Arrival Time)",
+                        qEn: "When did you arrive here?",
+                        qVi: "Bạn đến đây khi nào?",
+                        aEn: "I arrived here more than three months ago.",
+                        aVi: "Tôi đến đây hơn 3 tháng rồi.",
+                        keywordsAsk: ["when did you arrive", "come here", "how long", "arrive"],
+                        keywordsAns: ["arrived", "came", "more than", "three months", "months ago", "weeks ago", "years ago", "month", "year"]
+                    },
+                    // 19. Điều thích nhất ở Việt Nam (Favorite Things in Vietnam)
+                    {
+                        id: 23,
+                        subTopic: "Trải nghiệm Việt Nam (Favorites in Vietnam)",
+                        qEn: "What do you like most about Vietnam?",
+                        qVi: "Bạn thích gì nhất ở Việt Nam?",
+                        aEn: "I like the people and the food the most.",
+                        aVi: "Tôi thích con người và thức ăn nhất.",
+                        keywordsAsk: ["like most", "vietnam", "best about", "favorite thing"],
+                        keywordsAns: ["people", "food", "culture", "weather", "scenery", "most", "best", "like", "love"]
+                    },
+                    // 20. Con người ở đây (Local People)
+                    {
+                        id: 24,
+                        subTopic: "Con người địa phương (Local People)",
+                        qEn: "What are the people like here?",
+                        qVi: "Con người ở đây thế nào?",
+                        aEn: "Everyone is very friendly and helpful.",
+                        aVi: "Mọi người rất thân thiện và hay giúp đỡ.",
+                        keywordsAsk: ["people like", "local people", "how are the people"],
+                        keywordsAns: ["friendly", "helpful", "kind", "nice", "welcoming", "warm", "polite", "everyone", "people"]
+                    },
+                    // 21. Thời tiết (Weather)
+                    {
+                        id: 25,
+                        subTopic: "Thời tiết (Weather)",
+                        qEn: "How is the weather here?",
+                        qVi: "Thời tiết ở đây như thế nào?",
+                        aEn: "The weather here is very pleasant.",
+                        aVi: "Thời tiết ở đây rất dễ chịu.",
+                        keywordsAsk: ["weather", "climate", "hot", "cold"],
+                        keywordsAns: ["pleasant", "nice", "good", "great", "warm", "cool", "sunny", "hot", "cold", "comfortable", "weather"]
+                    },
+                    // 22. Ăn đồ cay (Spicy Food)
+                    {
+                        id: 26,
+                        subTopic: "Khẩu vị ăn uống (Spicy Food)",
+                        qEn: "Can you eat spicy food?",
+                        qVi: "Bạn ăn thức ăn cay được không?",
+                        aEn: "It's okay, I can eat a little spicy food.",
+                        aVi: "Cũng được, tôi ăn được một chút đồ cay.",
+                        keywordsAsk: ["spicy", "eat spicy", "hot food"],
+                        keywordsAns: ["okay", "ok", "a little", "can eat", "love spicy", "spicy", "not really", "fine", "so so"]
+                    },
+                    // 23. Uống bia Việt Nam (Vietnamese Beer)
+                    {
+                        id: 27,
+                        subTopic: "Đồ uống địa phương (Vietnamese Beer)",
+                        qEn: "Can you drink beer in Vietnam?",
+                        qVi: "Bạn uống bia ở Việt Nam được không?",
+                        aEn: "Yes, I really love it! Vietnamese beer is great.",
+                        aVi: "Tôi rất thích! Bia ở Việt Nam rất tuyệt.",
+                        keywordsAsk: ["drink beer", "beer", "vietnamese beer"],
+                        keywordsAns: ["love it", "like it", "really love", "really like", "great", "good", "delicious", "beer", "drink", "can"]
                     }
-                ]
+
+ ]
             }
         };
 
