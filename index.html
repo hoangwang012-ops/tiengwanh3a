@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Phiên Dịch Song Phương Việt - Anh</title>
+  <title>Dịch Nghe Tiếng Anh & Đoạn Văn Việt ↔ Anh</title>
   <style>
     * { box-sizing: border-box; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
     body {
@@ -13,7 +13,7 @@
       padding: 16px;
     }
     .app {
-      max-width: 860px;
+      max-width: 980px;
       margin: 0 auto;
     }
     .header-row {
@@ -21,17 +21,17 @@
       justify-content: space-between;
       align-items: center;
       gap: 10px;
-      margin-bottom: 6px;
       flex-wrap: wrap;
+      margin-bottom: 6px;
     }
     h1 {
-      font-size: 1.45rem;
+      font-size: 1.4rem;
       margin: 0;
     }
     .sub {
       color: #94a3b8;
       font-size: 0.9rem;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
     .banner {
       background: #1e293b;
@@ -39,52 +39,20 @@
       border-radius: 10px;
       padding: 10px 14px;
       margin-bottom: 14px;
-      font-size: 0.86rem;
+      font-size: 0.85rem;
       color: #e2e8f0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
     }
     .banner-warn {
       border-color: #f59e0b;
       background: rgba(245, 158, 11, 0.12);
       color: #fde68a;
     }
-    .controls-bar {
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 12px;
-      padding: 12px 14px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-    .control-group {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.88rem;
-      color: #cbd5e1;
-    }
-    select, input[type="range"] {
-      background: #0f172a;
-      color: #f8fafc;
-      border: 1px solid #475569;
-      border-radius: 8px;
-      padding: 6px 8px;
-      max-width: 220px;
-    }
     .grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 14px;
+      gap: 16px;
     }
-    @media (max-width: 680px) {
+    @media (max-width: 780px) {
       .grid { grid-template-columns: 1fr; }
     }
     .card {
@@ -101,11 +69,12 @@
       justify-content: space-between;
       align-items: center;
       gap: 8px;
+      flex-wrap: wrap;
     }
     .badge {
-      font-size: 0.78rem;
+      font-size: 0.8rem;
       font-weight: 700;
-      padding: 4px 10px;
+      padding: 5px 10px;
       border-radius: 999px;
       background: #334155;
       color: #e2e8f0;
@@ -113,33 +82,46 @@
     .status {
       font-size: 0.82rem;
       color: #38bdf8;
-      min-height: 1.2em;
-      text-align: right;
+    }
+    .label {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     .box {
       background: #0f172a;
       border: 1px solid #334155;
       border-radius: 10px;
       padding: 10px 12px;
-      min-height: 64px;
+      min-height: 76px;
+      max-height: 220px;
+      overflow-y: auto;
       font-size: 0.96rem;
-      line-height: 1.45;
+      line-height: 1.5;
       white-space: pre-wrap;
     }
-    .label {
-      font-size: 0.78rem;
-      color: #94a3b8;
-      margin-bottom: 4px;
+    textarea {
+      width: 100%;
+      background: #0f172a;
+      color: #f8fafc;
+      border: 1px solid #475569;
+      border-radius: 10px;
+      padding: 10px 12px;
+      min-height: 110px;
+      resize: vertical;
+      font-size: 0.96rem;
+      line-height: 1.5;
+    }
+    textarea:focus {
+      outline: none;
+      border-color: #38bdf8;
     }
     .result-en {
       color: #4ade80;
       font-weight: 600;
-      font-size: 1.05rem;
-    }
-    .result-vi {
-      color: #fbbf24;
-      font-weight: 600;
-      font-size: 1.05rem;
     }
     .btn-row {
       display: flex;
@@ -151,54 +133,54 @@
       border-radius: 10px;
       padding: 10px 14px;
       font-weight: 600;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       cursor: pointer;
       transition: opacity 0.15s, transform 0.1s;
     }
     button:active { transform: scale(0.98); }
-    button:hover { opacity: 0.92; }
-    .btn-mic-vi { background: #2563eb; color: white; flex: 1; }
-    .btn-mic-en { background: #0d9488; color: white; flex: 1; }
-    .btn-listening { background: #dc2626 !important; animation: pulse 1.2s infinite; }
+    button:hover:not(:disabled) { opacity: 0.92; }
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .btn-en { background: #0d9488; color: #fff; flex: 1; }
+    .btn-done-en { background: #d97706; color: #fff; flex: 1; }
+    .btn-vi-mic { background: #2563eb; color: #fff; flex: 1; }
+    .btn-vi-trans { background: #16a34a; color: #fff; flex: 1; }
     .btn-sec { background: #334155; color: #f8fafc; }
-    .btn-guide { background: #7c3aed; color: #ffffff; padding: 8px 14px; font-size: 0.86rem; }
+    .btn-guide { background: #7c3aed; color: #fff; padding: 8px 14px; }
+    .btn-listening { background: #dc2626 !important; animation: pulse 1.2s infinite; }
     @keyframes pulse {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.65; }
     }
-    .manual-row {
-      display: flex;
-      gap: 6px;
-    }
-    .manual-row input[type="text"] {
-      flex: 1;
+    .sentence-log {
       background: #0f172a;
-      color: #f8fafc;
-      border: 1px solid #475569;
-      border-radius: 8px;
-      padding: 8px 10px;
-      font-size: 0.88rem;
-    }
-    .history {
-      margin-top: 16px;
-      background: #1e293b;
       border: 1px solid #334155;
-      border-radius: 14px;
-      padding: 14px 16px;
+      border-radius: 10px;
+      padding: 10px 12px;
+      min-height: 150px;
+      max-height: 280px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
-    .history-item {
-      border-bottom: 1px solid #334155;
-      padding: 8px 0;
-      font-size: 0.9rem;
+    .sentence-pair {
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 6px;
     }
-    .history-item:last-child { border-bottom: none; }
-    .note {
-      margin-top: 12px;
-      font-size: 0.8rem;
-      color: #94a3b8;
-      line-height: 1.5;
+    .sentence-pair:last-child { border-bottom: none; padding-bottom: 0; }
+    .en-line { color: #e2e8f0; font-size: 0.92rem; }
+    .vi-line { color: #fbbf24; font-weight: 600; font-size: 0.95rem; margin-top: 2px; }
+    .debug-line { color: #94a3b8; font-size: 0.76rem; margin-top: 2px; }
+    .opt-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.84rem;
+      color: #cbd5e1;
     }
-    /* Modal HƯỚNG DẪN */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -209,19 +191,16 @@
       justify-content: center;
       padding: 16px;
     }
-    .modal-overlay.open {
-      display: flex;
-    }
+    .modal-overlay.open { display: flex; }
     .modal-box {
       background: #1e293b;
       border: 1px solid #475569;
       border-radius: 16px;
-      max-width: 680px;
+      max-width: 660px;
       width: 100%;
-      max-height: 86vh;
+      max-height: 85vh;
       overflow-y: auto;
       padding: 20px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
     }
     .modal-header {
       display: flex;
@@ -231,11 +210,6 @@
       padding-bottom: 10px;
       margin-bottom: 12px;
     }
-    .modal-header h2 {
-      margin: 0;
-      font-size: 1.15rem;
-      color: #f8fafc;
-    }
     .guide-list {
       margin: 0;
       padding-left: 20px;
@@ -243,187 +217,112 @@
       font-size: 0.92rem;
       color: #e2e8f0;
     }
-    .guide-list li {
-      margin-bottom: 10px;
-    }
-    .guide-tip {
-      margin-top: 12px;
-      padding: 10px 12px;
-      border-radius: 10px;
-      background: #0f172a;
-      border: 1px solid #334155;
-      font-size: 0.86rem;
-      color: #cbd5e1;
-      line-height: 1.5;
-    }
+    .guide-list li { margin-bottom: 8px; }
   </style>
 </head>
 <body>
   <div class="app">
     <div class="header-row">
-      <h1>🎙️ Phiên Dịch Song Phương Việt ↔ Anh</h1>
-      <button id="btnOpenGuide" class="btn-guide">📘 HƯỚNG DẪN SỬ DỤNG</button>
+      <h1>📝AI TRỢ LY PHIÊN DỊCH</h1>
+      <button id="btnOpenGuide" class="btn-guide" type="button">📘 HƯỚNG DẪN</button>
     </div>
-    <div class="sub">Nói tiếng Việt → Máy đọc &amp; hiện tiếng Anh | Người ngoài nói tiếng Anh → Máy đọc &amp; hiện tiếng Việt</div>
+    <div class="sub">1. Nghe tiếng Anh bên ngoài → Hiện chữ tiếng Việt từng câu | 2. Viết hoặc đọc đoạn văn tiếng Việt → Hiện chữ tiếng Anh</div>
 
-    <div id="envBanner" class="banner">
-      <span id="envInfo">Đang kiểm tra trình duyệt...</span>
-      <button id="btnTestAudio" class="btn-sec" style="padding: 6px 10px; font-size: 0.8rem;">🔊 Kiểm tra loa</button>
-    </div>
-
-    <div class="controls-bar">
-      <div class="control-group">
-        <label for="enVoiceSelect">Giọng Anh:</label>
-        <select id="enVoiceSelect"></select>
-      </div>
-      <div class="control-group">
-        <label for="viVoiceSelect">Giọng Việt:</label>
-        <select id="viVoiceSelect"></select>
-      </div>
-      <div class="control-group">
-        <label for="rateRange">Tốc độ: <span id="rateVal">1.0</span>x</label>
-        <input id="rateRange" type="range" min="0.6" max="1.4" step="0.1" value="1.0" />
-      </div>
-      <div class="control-group">
-        <input id="autoListenEnCheckbox" type="checkbox" checked />
-        <label for="autoListenEnCheckbox">Tự động nghe tiếng Anh sau khi dịch xong</label>
-      </div>
-    </div>
+    <div id="envBanner" class="banner">Đang kiểm tra trình duyệt...</div>
 
     <div class="grid">
-      <!-- CHIỀU 1: BẠN NÓI TIẾNG VIỆT -> DỊCH SANG TIẾNG ANH -->
+      <!-- CHỨC NĂNG 1: NGHE TIẾNG ANH -> HIỆN CHỮ TIẾNG VIỆT TỪNG CÂU -->
       <div class="card">
         <div class="card-header">
-          <span class="badge">BẠN NÓI (TIẾNG VIỆT) → MÁY NÓI (TIẾNG ANH)</span>
-          <span id="statusVi2En" class="status">Sẵn sàng</span>
+          <span class="badge">1. NGHE TIẾNG ANH → CHỮ TIẾNG VIỆT</span>
+          <span id="statusEn" class="status">Sẵn sàng</span>
         </div>
 
         <div>
-          <div class="label">Câu tiếng Việt bạn nói:</div>
-          <div id="heardVi" class="box">—</div>
+          <div class="label">Câu tiếng Anh đang nghe tạm thời:</div>
+          <div id="liveEnBox" class="box" style="min-height: 54px; color: #94a3b8;">—</div>
         </div>
 
         <div>
-          <div class="label">Bản dịch tiếng Anh (Máy đọc &amp; hiển thị):</div>
-          <div id="transEn" class="box result-en">—</div>
+          <div class="label">
+            <span>Từng câu tiếng Anh đã nghe &amp; dịch sang tiếng Việt:</span>
+            <button id="btnCopyEnLog" class="btn-sec" type="button" style="padding: 3px 8px; font-size: 0.76rem;">📋 Sao chép</button>
+          </div>
+          <div id="enToViLog" class="sentence-log">
+            <div style="color: #64748b; font-size: 0.88rem;">Chưa có câu nào. Bấm "Bắt đầu nghe tiếng Anh" để thu từng câu...</div>
+          </div>
+        </div>
+
+        <div class="opt-row">
+          <input id="chkContinuousEn" type="checkbox" checked />
+          <label for="chkContinuousEn">Nghe liên tục nhiều câu (tự dịch ngay khi dứt từng câu)</label>
         </div>
 
         <div class="btn-row">
-          <button id="btnVi2En" class="btn-mic-vi">🎤 Nói Tiếng Việt</button>
-          <button id="btnRetryVi" class="btn-sec" title="Xóa câu nói sai và thu âm lại tiếng Việt">🔄 Nói lại tiếng Việt</button>
-          <button id="btnSpeakEn" class="btn-sec">🔊 Đọc lại tiếng Anh</button>
-        </div>
-
-        <div class="manual-row">
-          <input id="inputViManual" type="text" placeholder="Hoặc gõ câu tiếng Việt để dịch & đọc..." />
-          <button id="btnManualVi2En" class="btn-sec">Dịch sang tiếng Anh</button>
+          <button id="btnToggleEn" class="btn-en" type="button">🎧 Bắt đầu nghe tiếng Anh</button>
+          <button id="btnFinishEn" class="btn-done-en" type="button" disabled>✅ Dừng &amp; dịch câu đã đọc</button>
+          <button id="btnClearEn" class="btn-sec" type="button">🗑️ Xóa</button>
         </div>
       </div>
 
-      <!-- CHIỀU 2: NGƯỜI NGOÀI NÓI TIẾNG ANH -> DỊCH SANG TIẾNG VIỆT -->
+      <!-- CHỨC NĂNG 2: VIẾT HOẶC ĐỌC ĐOẠN VĂN TIẾNG VIỆT -> CHỮ TIẾNG ANH -->
       <div class="card">
         <div class="card-header">
-          <span class="badge">NGƯỜI NGOÀI NÓI (TIẾNG ANH) → MÁY NÓI (TIẾNG VIỆT)</span>
-          <span id="statusEn2Vi" class="status">Sẵn sàng</span>
+          <span class="badge">2. VIẾT / ĐỌC ĐOẠN VĂN TIẾNG VIỆT → CHỮ TIẾNG ANH</span>
+          <span id="statusVi" class="status">Sẵn sàng</span>
         </div>
 
         <div>
-          <div class="label">Câu tiếng Anh nghe được:</div>
-          <div id="heardEn" class="box">—</div>
-        </div>
-
-        <div>
-          <div class="label">Bản dịch tiếng Việt (Máy đọc &amp; hiển thị):</div>
-          <div id="transVi" class="box result-vi">—</div>
+          <div class="label">
+            <span>Đoạn văn tiếng Việt (nhập chữ hoặc bấm mic để đọc thêm):</span>
+            <button id="btnClearViInput" class="btn-sec" type="button" style="padding: 3px 8px; font-size: 0.76rem;">Xóa đoạn tiếng Việt</button>
+          </div>
+          <textarea id="viParagraphInput" placeholder="Nhập đoạn văn tiếng Việt vào đây, hoặc bấm nút '🎤 Đọc đoạn tiếng Việt' bên dưới để đọc nhiều câu liên tiếp..."></textarea>
         </div>
 
         <div class="btn-row">
-          <button id="btnEn2Vi" class="btn-mic-en">🎧 Nghe Tiếng Anh</button>
-          <button id="btnSpeakVi" class="btn-sec">🔊 Đọc lại tiếng Việt</button>
+          <button id="btnMicVi" class="btn-vi-mic" type="button">🎤 Đọc đoạn tiếng Việt</button>
+          <button id="btnTranslateVi" class="btn-vi-trans" type="button">🌐 Dịch sang tiếng Anh</button>
         </div>
 
-        <div class="manual-row">
-          <input id="inputEnManual" type="text" placeholder="Hoặc gõ câu tiếng Anh để dịch & đọc..." />
-          <button id="btnManualEn2Vi" class="btn-sec">Dịch sang tiếng Việt</button>
+        <div>
+          <div class="label">
+            <span>Bản dịch tiếng Anh (chữ):</span>
+            <button id="btnCopyEnOut" class="btn-sec" type="button" style="padding: 3px 8px; font-size: 0.76rem;">📋 Sao chép đoạn văn tiếng Anh</button>
+          </div>
+          <div id="enParagraphOutput" class="box result-en" style="min-height: 110px;">—</div>
         </div>
       </div>
-    </div>
-
-    <div class="history">
-      <div class="card-header" style="margin-bottom: 6px;">
-        <strong>Lịch sử phiên dịch</strong>
-        <button id="btnClearHist" class="btn-sec" style="padding: 6px 10px; font-size: 0.8rem;">Xóa lịch sử</button>
-      </div>
-      <div id="historyList" style="color: #94a3b8; font-size: 0.88rem;">Chưa có câu nào.</div>
-    </div>
-
-    <div class="note">
-      * Bấm nút <strong>📘 HƯỚNG DẪN SỬ DỤNG</strong> ở góc trên bên phải để xem chi tiết cách dùng.
     </div>
   </div>
 
-  <!-- HỘP THOẠI HƯỚNG DẪN SỬ DỤNG -->
-  <div id="guideModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="guideTitle">
+  <!-- MODAL HƯỚNG DẪN -->
+  <div id="guideModal" class="modal-overlay" role="dialog" aria-modal="true">
     <div class="modal-box">
       <div class="modal-header">
-        <h2 id="guideTitle">📘 HƯỚNG DẪN SỬ DỤNG ỨNG DỤNG PHIÊN DỊCH</h2>
-        <button id="btnCloseGuide" class="btn-sec" style="padding: 6px 12px;">✕ Đóng</button>
+        <h2 style="margin:0; font-size:1.1rem;">📘 HƯỚNG DẪN SỬ DỤNG</h2>
+        <button id="btnCloseGuide" class="btn-sec" type="button" style="padding:6px 12px;">✕ Đóng</button>
       </div>
       <ol class="guide-list">
-                <li><strong>Chiều 1 — Bạn nói tiếng Việt → Máy dịch &amp; đọc tiếng Anh:</strong> Bấm nút <strong>🎤 Nói Tiếng Việt</strong> (nút chuyển sang màu đỏ nhấp nháy), nói rõ câu tiếng Việt của bạn rồi ngừng lại. Máy sẽ hiện câu tiếng Việt, dịch sang tiếng Anh, hiển thị chữ màu xanh lá và tự động đọc to bằng tiếng Anh.</li>
-        <li><strong>Tự động chuyển sang nghe người đối diện:</strong> Khi ô <strong>Tự động nghe tiếng Anh sau khi dịch xong</strong> được tích chọn, ngay sau khi máy đọc xong câu tiếng Anh, mục <strong>NGƯỜI NGOÀI NÓI (TIẾNG ANH) → MÁY NÓI (TIẾNG VIỆT)</strong> sẽ tự bật micro để chờ người đối diện trả lời bằng tiếng Anh (bạn vẫn có thể bấm nút <strong>🎧 Nghe Tiếng Anh</strong> thủ công bất cứ lúc nào).</li>
-        <li><strong>Chiều 2 — Người ngoài nói tiếng Anh → Máy dịch &amp; đọc tiếng Việt:</strong> Khi micro ở khung bên phải đang bật (nút đỏ nhấp nháy), người đối diện nói tiếng Anh. Máy sẽ nhận diện chữ tiếng Anh, dịch sang tiếng Việt (chữ màu vàng) và tự động đọc to tiếng Việt cho bạn nghe.</li>
-        <li><strong>Nghe lại, chỉnh giọng &amp; nhập chữ dự phòng:</strong> Dùng thanh <strong>Giọng Anh / Giọng Việt / Tốc độ</strong> để chọn giọng đọc phù hợp; bấm <strong>🔊 Đọc lại tiếng Anh</strong> hoặc <strong>🔊 Đọc lại tiếng Việt</strong> để phát lại; hoặc gõ trực tiếp vào ô nhập bên dưới từng khung rồi nhấn <code>Enter</code> nếu đang ở nơi ồn ào hoặc chưa bật micro.</li>
+        <li><strong>Chức năng 1 (Nghe tiếng Anh → Dịch chữ tiếng Việt từng câu):</strong> Bấm <strong>🎧 Bắt đầu nghe tiếng Anh</strong>. Khi người nói tiếng Anh đọc xong, bạn có thể bấm <strong>✅ Dừng &amp; dịch câu đã đọc</strong> để chốt dừng nghe ngay và dịch phần tiếng Anh vừa đọc sang tiếng Việt, hoặc bấm <strong>⏹ Dừng nghe tiếng Anh</strong>.</li>
+        <li><strong>Chức năng 2 (Viết hoặc đọc đoạn văn tiếng Việt → Dịch chữ tiếng Anh):</strong> Gõ đoạn văn tiếng Việt vào ô hoặc bấm <strong>🎤 Đọc đoạn tiếng Việt</strong> để đọc nhiều câu liên tục, rồi bấm <strong>🌐 Dịch sang tiếng Anh</strong> (hoặc nhấn <code>Ctrl + Enter</code>).</li>
+        
       </ol>
-          </div>
+    </div>
   </div>
 
   <script>
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
+    const envBanner = document.getElementById("envBanner");
     const btnOpenGuide = document.getElementById("btnOpenGuide");
     const btnCloseGuide = document.getElementById("btnCloseGuide");
     const guideModal = document.getElementById("guideModal");
 
-    const envBanner = document.getElementById("envBanner");
-    const envInfo = document.getElementById("envInfo");
-    const btnTestAudio = document.getElementById("btnTestAudio");
-
-    const btnVi2En = document.getElementById("btnVi2En");
-    const btnRetryVi = document.getElementById("btnRetryVi");
-    const btnEn2Vi = document.getElementById("btnEn2Vi");
-    const btnSpeakEn = document.getElementById("btnSpeakEn");
-    const btnSpeakVi = document.getElementById("btnSpeakVi");
-    const btnClearHist = document.getElementById("btnClearHist");
-
-    const inputViManual = document.getElementById("inputViManual");
-    const btnManualVi2En = document.getElementById("btnManualVi2En");
-    const inputEnManual = document.getElementById("inputEnManual");
-    const btnManualEn2Vi = document.getElementById("btnManualEn2Vi");
-
-    const heardViEl = document.getElementById("heardVi");
-    const transEnEl = document.getElementById("transEn");
-    const heardEnEl = document.getElementById("heardEn");
-    const transViEl = document.getElementById("transVi");
-
-    const statusVi2En = document.getElementById("statusVi2En");
-    const statusEn2Vi = document.getElementById("statusEn2Vi");
-
-    const autoListenEnCheckbox = document.getElementById("autoListenEnCheckbox");
-    const enVoiceSelect = document.getElementById("enVoiceSelect");
-    const viVoiceSelect = document.getElementById("viVoiceSelect");
-    const rateRange = document.getElementById("rateRange");
-    const rateVal = document.getElementById("rateVal");
-    const historyList = document.getElementById("historyList");
-
-    let voices = [];
-    let activeMode = null;
-    let recognition = null;
-    let lastEnglishText = "";
-    let lastVietnameseText = "";
-    let hasHistory = false;
-    let pendingAutoListenEn = false;
-    let autoListenTimer = null;
+    (function checkEnv() {
+      const proto = location.protocol;
+      const hasSR = Boolean(SpeechRecognition);
+          })();
 
     btnOpenGuide.addEventListener("click", () => guideModal.classList.add("open"));
     btnCloseGuide.addEventListener("click", () => guideModal.classList.remove("open"));
@@ -431,101 +330,38 @@
       if (e.target === guideModal) guideModal.classList.remove("open");
     });
 
-    function updateEnvironmentBanner() {
-      const proto = location.protocol;
-      const hasSR = Boolean(SpeechRecognition);
-      const hasTTS = "speechSynthesis" in window;
-
-          }
-    updateEnvironmentBanner();
-
-    rateRange.addEventListener("input", () => {
-      rateVal.textContent = Number(rateRange.value).toFixed(1);
-    });
-
-    function loadVoices() {
-      if (!("speechSynthesis" in window)) return;
-      voices = window.speechSynthesis.getVoices() || [];
-      enVoiceSelect.innerHTML = "";
-      viVoiceSelect.innerHTML = "";
-
-      const enVoices = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith("en"));
-      const viVoices = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith("vi"));
-
-      (enVoices.length ? enVoices : voices).forEach((v) => {
-        const opt = document.createElement("option");
-        opt.value = v.name;
-        opt.textContent = `${v.name} (${v.lang})`;
-        enVoiceSelect.appendChild(opt);
-      });
-
-      (viVoices.length ? viVoices : voices).forEach((v) => {
-        const opt = document.createElement("option");
-        opt.value = v.name;
-        opt.textContent = `${v.name} (${v.lang})`;
-        viVoiceSelect.appendChild(opt);
-      });
+    function normalizeForCompare(s) {
+      return (s || "")
+        .toLowerCase()
+        .replace(/[^\p{L}\p{N}]+/gu, " ")
+        .trim();
     }
 
-    if ("speechSynthesis" in window) {
-      loadVoices();
-      window.speechSynthesis.onvoiceschanged = loadVoices;
+    function hasVietnameseDiacritics(s) {
+      return /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i.test(s || "");
     }
 
-    function clearAutoListenTimer() {
-      pendingAutoListenEn = false;
-      if (autoListenTimer) {
-        clearTimeout(autoListenTimer);
-        autoListenTimer = null;
+    function isUntranslatedEcho(outText, sourceText, sourceLang, targetLang) {
+      if (!outText || !outText.trim()) return true;
+      if (sourceLang === targetLang) return false;
+      const normOut = normalizeForCompare(outText);
+      const normSrc = normalizeForCompare(sourceText);
+      if (!normOut) return true;
+      if (targetLang === "vi" && normOut === normSrc && !hasVietnameseDiacritics(outText)) {
+        return true;
       }
+      return normOut === normSrc;
     }
 
-    function stopRecognition(keepPendingAuto = false) {
-      if (!keepPendingAuto) clearAutoListenTimer();
-      activeMode = null;
-      btnVi2En.classList.remove("btn-listening");
-      btnEn2Vi.classList.remove("btn-listening");
-      if (recognition) {
-        try { recognition.abort(); } catch (e) {}
-        recognition = null;
-      }
-    }
-
-    function speakText(text, langPrefix, selectEl, onDone) {
-      if (!text || !text.trim() || !("speechSynthesis" in window)) {
-        if (onDone) onDone();
-        return;
-      }
-      if (recognition) {
-        try { recognition.abort(); } catch (e) {}
-        recognition = null;
-      }
-      if (!voices.length) {
-        voices = window.speechSynthesis.getVoices() || [];
-      }
-      window.speechSynthesis.cancel();
-      const utter = new SpeechSynthesisUtterance(text);
-      const chosen = voices.find(v => v.name === selectEl.value && v.lang && v.lang.toLowerCase().startsWith(langPrefix))
-        || voices.find(v => v.lang && v.lang.toLowerCase().startsWith(langPrefix));
-      if (chosen) utter.voice = chosen;
-      utter.lang = chosen ? chosen.lang : (langPrefix === "en" ? "en-US" : "vi-VN");
-      utter.rate = parseFloat(rateRange.value) || 1.0;
-
-      let finished = false;
-      const finishOnce = () => {
-        if (finished) return;
-        finished = true;
-        clearTimeout(safetyTimer);
-        if (onDone) onDone();
-      };
-      const safetyTimer = setTimeout(finishOnce, Math.max(4000, text.length * 140));
-
-      utter.onend = finishOnce;
-      utter.onerror = finishOnce;
+    async function fetchJsonWithTimeout(url, options, timeoutMs) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeoutMs || 6000);
       try {
-        window.speechSynthesis.speak(utter);
-      } catch (e) {
-        finishOnce();
+        const res = await fetch(url, Object.assign({}, options || {}, { signal: controller.signal }));
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return await res.json();
+      } finally {
+        clearTimeout(timer);
       }
     }
 
@@ -533,43 +369,95 @@
       const cleanText = (text || "").trim();
       if (!cleanText) return "";
 
-      // Endpoint 1: Google Translate public endpoint (client=gtx)
+      const candidates = [];
+      const errors = [];
+
+      // 1. MyMemory Translation API
       try {
-        const url1 = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${encodeURIComponent(sourceLang)}&tl=${encodeURIComponent(targetLang)}&dt=t&q=${encodeURIComponent(cleanText)}`;
-        const res1 = await fetch(url1);
-        if (res1.ok) {
-          const data1 = await res1.json();
-          if (Array.isArray(data1) && Array.isArray(data1[0])) {
-            const out1 = data1[0].map(part => part[0]).join("").trim();
-            if (out1) return out1;
+        const urlMM = "https://api.mymemory.translated.net/get?q="
+          + encodeURIComponent(cleanText)
+          + "&langpair=" + encodeURIComponent(sourceLang + "|" + targetLang);
+        const dataMM = await fetchJsonWithTimeout(urlMM, null, 6000);
+        const outMM = dataMM && dataMM.responseData && dataMM.responseData.translatedText
+          ? dataMM.responseData.translatedText.trim()
+          : "";
+        if (outMM) {
+          if (!isUntranslatedEcho(outMM, cleanText, sourceLang, targetLang)) {
+            return { text: outMM, via: "MyMemory" };
+          }
+          candidates.push({ text: outMM, via: "MyMemory(echo)" });
+        }
+      } catch (e) {
+        errors.push("MyMemory: " + (e.message || e));
+      }
+
+      // 2. Google Translate public endpoint (client=gtx)
+      try {
+        const urlGtx = "https://translate.googleapis.com/translate_a/single?client=gtx&sl="
+          + encodeURIComponent(sourceLang)
+          + "&tl=" + encodeURIComponent(targetLang)
+          + "&dt=t&q=" + encodeURIComponent(cleanText);
+        const dataGtx = await fetchJsonWithTimeout(urlGtx, null, 6000);
+        if (Array.isArray(dataGtx) && Array.isArray(dataGtx[0])) {
+          const outGtx = dataGtx[0].map(part => part && part[0] ? part[0] : "").join("").trim();
+          if (outGtx) {
+            if (!isUntranslatedEcho(outGtx, cleanText, sourceLang, targetLang)) {
+              return { text: outGtx, via: "GoogleGTX" };
+            }
+            candidates.push({ text: outGtx, via: "GoogleGTX(echo)" });
           }
         }
-      } catch (e) {}
+      } catch (e) {
+        errors.push("GoogleGTX: " + (e.message || e));
+      }
 
-      // Endpoint 2: Google Translate mobile/webapp endpoint (client=dict-chrome-ex)
+      // 3. Google Translate endpoint (client=dict-chrome-ex)
       try {
-        const url2 = `https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=${encodeURIComponent(sourceLang)}&tl=${encodeURIComponent(targetLang)}&q=${encodeURIComponent(cleanText)}`;
-        const res2 = await fetch(url2);
-        if (res2.ok) {
-          const data2 = await res2.json();
-          if (Array.isArray(data2) && typeof data2[0] === "string" && data2[0].trim()) {
-            return data2[0].trim();
-          }
-          if (Array.isArray(data2) && Array.isArray(data2[0]) && typeof data2[0][0] === "string") {
-            return data2[0][0].trim();
-          }
+        const urlC5 = "https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl="
+          + encodeURIComponent(sourceLang)
+          + "&tl=" + encodeURIComponent(targetLang)
+          + "&q=" + encodeURIComponent(cleanText);
+        const dataC5 = await fetchJsonWithTimeout(urlC5, null, 6000);
+        let outC5 = "";
+        if (Array.isArray(dataC5) && typeof dataC5[0] === "string") {
+          outC5 = dataC5[0].trim();
+        } else if (Array.isArray(dataC5) && Array.isArray(dataC5[0]) && typeof dataC5[0][0] === "string") {
+          outC5 = dataC5[0][0].trim();
         }
-      } catch (e) {}
+        if (outC5) {
+          if (!isUntranslatedEcho(outC5, cleanText, sourceLang, targetLang)) {
+            return { text: outC5, via: "GoogleC5" };
+          }
+          candidates.push({ text: outC5, via: "GoogleC5(echo)" });
+        }
+      } catch (e) {
+        errors.push("GoogleC5: " + (e.message || e));
+      }
 
-      // Endpoint 3: MyMemory Translation API (CORS-friendly trên Safari/iPhone)
-      const langPair = `${sourceLang}|${targetLang}`;
-      const url3 = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(cleanText)}&langpair=${encodeURIComponent(langPair)}`;
-      const res3 = await fetch(url3);
-      if (!res3.ok) throw new Error("Không kết nối được máy chủ dịch (HTTP " + res3.status + ")");
-      const data3 = await res3.json();
-      const out3 = data3 && data3.responseData && data3.responseData.translatedText;
-      if (!out3) throw new Error("Máy chủ dịch không trả về kết quả");
-      return out3.trim();
+      // 4. Lingva Translate public API fallback
+      try {
+        const urlLingva = "https://lingva.ml/api/v1/"
+          + encodeURIComponent(sourceLang) + "/"
+          + encodeURIComponent(targetLang) + "/"
+          + encodeURIComponent(cleanText);
+        const dataLingva = await fetchJsonWithTimeout(urlLingva, null, 6000);
+        const outLingva = dataLingva && typeof dataLingva.translation === "string"
+          ? dataLingva.translation.trim()
+          : "";
+        if (outLingva) {
+          if (!isUntranslatedEcho(outLingva, cleanText, sourceLang, targetLang)) {
+            return { text: outLingva, via: "Lingva" };
+          }
+          candidates.push({ text: outLingva, via: "Lingva(echo)" });
+        }
+      } catch (e) {
+        errors.push("Lingva: " + (e.message || e));
+      }
+
+      if (candidates.length > 0) {
+        return candidates[0];
+      }
+      throw new Error(errors.join(" | ") || "Không kết nối được máy chủ dịch");
     }
 
     function escapeHtml(str) {
@@ -578,217 +466,366 @@
       }[m]));
     }
 
-    function addHistory(directionLabel, sourceText, translatedText) {
-      if (!hasHistory) {
-        historyList.innerHTML = "";
-        hasHistory = true;
+    // ==================== PHẦN 1: NGHE TIẾNG ANH -> CHỮ TIẾNG VIỆT ====================
+    const btnToggleEn = document.getElementById("btnToggleEn");
+    const btnFinishEn = document.getElementById("btnFinishEn");
+    const btnClearEn = document.getElementById("btnClearEn");
+    const btnCopyEnLog = document.getElementById("btnCopyEnLog");
+    const chkContinuousEn = document.getElementById("chkContinuousEn");
+    const statusEn = document.getElementById("statusEn");
+    const liveEnBox = document.getElementById("liveEnBox");
+    const enToViLog = document.getElementById("enToViLog");
+
+    let enRec = null;
+    let isListeningEn = false;
+    let hasEnEntries = false;
+    let enEntries = [];
+    let enTranslateQueue = Promise.resolve();
+    let lastQueuedSentenceKey = "";
+    let lastQueuedAt = 0;
+    let latestInterimEn = "";
+
+    function setEnButtonsListeningState(listening) {
+      btnFinishEn.disabled = !listening;
+      if (listening) {
+        btnToggleEn.classList.add("btn-listening");
+        btnToggleEn.textContent = "⏹ Dừng nghe tiếng Anh";
+      } else {
+        btnToggleEn.classList.remove("btn-listening");
+        btnToggleEn.textContent = "🎧 Bắt đầu nghe tiếng Anh";
       }
-      const item = document.createElement("div");
-      item.className = "history-item";
-      item.innerHTML = `<div><strong>[${directionLabel}]</strong> ${escapeHtml(sourceText)}</div>
-                        <div style="color:#4ade80; margin-top:2px;">→ ${escapeHtml(translatedText)}</div>`;
-      historyList.prepend(item);
     }
 
-    async function handleSpokenText(mode, spoken) {
-      const statusEl = mode === "vi2en" ? statusVi2En : statusEn2Vi;
-      const sourceBox = mode === "vi2en" ? heardViEl : heardEnEl;
-      const targetBox = mode === "vi2en" ? transEnEl : transViEl;
+    function stopEnListener() {
+      isListeningEn = false;
+      setEnButtonsListeningState(false);
+      if (enRec) {
+        try { enRec.abort(); } catch (e) {}
+        enRec = null;
+      }
+    }
 
-      sourceBox.textContent = spoken || "—";
-      if (!spoken || spoken === "—") {
-        statusEl.textContent = "Không nghe rõ, bấm lại để thử";
+    function enqueueTranslatedEnSentence(enSentence) {
+      const sentence = (enSentence || "").replace(/\s+/g, " ").trim();
+      if (!sentence) return;
+
+      const now = Date.now();
+      const normKey = normalizeForCompare(sentence);
+      if (normKey && normKey === lastQueuedSentenceKey && (now - lastQueuedAt) < 2500) {
         return;
       }
+      lastQueuedSentenceKey = normKey;
+      lastQueuedAt = now;
 
-      statusEl.textContent = "Đang dịch...";
-      try {
-        if (mode === "vi2en") {
-          const translated = await translateText(spoken, "vi", "en");
-          lastEnglishText = translated;
-          targetBox.textContent = translated;
-          statusEl.textContent = "Đang đọc tiếng Anh...";
-          addHistory("VI → EN", spoken, translated);
-          const shouldAutoListen = Boolean(autoListenEnCheckbox && autoListenEnCheckbox.checked);
-          pendingAutoListenEn = shouldAutoListen;
-          speakText(translated, "en", enVoiceSelect, () => {
-            if (shouldAutoListen && pendingAutoListenEn && activeMode === null) {
-              pendingAutoListenEn = false;
-              statusEn2Vi.textContent = "Tự động bật Nghe Tiếng Anh...";
-              autoListenTimer = setTimeout(() => {
-                autoListenTimer = null;
-                if (activeMode === null) {
-                  startListening("en2vi", { fromAuto: true });
-                }
-              }, 250);
-            } else {
-              statusEl.textContent = "Hoàn tất";
-            }
-          });
-        } else {
-          const translated = await translateText(spoken, "en", "vi");
-          lastVietnameseText = translated;
-          targetBox.textContent = translated;
-          statusEl.textContent = "Đang đọc tiếng Việt...";
-          addHistory("EN → VI", spoken, translated);
-          speakText(translated, "vi", viVoiceSelect, () => {
-            statusEl.textContent = "Hoàn tất";
-          });
+      enTranslateQueue = enTranslateQueue.then(async () => {
+        if (!hasEnEntries) {
+          enToViLog.innerHTML = "";
+          hasEnEntries = true;
         }
-      } catch (err) {
-        targetBox.textContent = "Lỗi dịch: " + err.message;
-        statusEl.textContent = "Dịch thất bại";
+
+        const row = document.createElement("div");
+        row.className = "sentence-pair";
+        row.innerHTML = '<div class="en-line">EN: ' + escapeHtml(sentence) + '</div>'
+                      + '<div class="vi-line">VI: Đang dịch...</div>'
+                      + '<div class="debug-line"></div>';
+        enToViLog.appendChild(row);
+        enToViLog.scrollTop = enToViLog.scrollHeight;
+        statusEn.textContent = "Đang dịch câu tiếng Anh...";
+
+        try {
+          const result = await translateText(sentence, "en", "vi");
+          const viText = (result && result.text) ? result.text.trim() : "[Trống]";
+          const viaInfo = (result && result.via) ? result.via : "";
+          row.querySelector(".vi-line").textContent = "VI: " + viText;
+          const dbg = row.querySelector(".debug-line");
+          if (viaInfo.indexOf("(echo)") !== -1) {
+            dbg.textContent = "Lưu ý: các máy chủ dịch hiện trả về nguyên văn (" + viaInfo + ")";
+          } else {
+            dbg.textContent = "Nguồn dịch: " + viaInfo;
+          }
+          enEntries.push({ en: sentence, vi: viText });
+        } catch (err) {
+          row.querySelector(".vi-line").textContent = "VI: [Lỗi dịch]";
+          row.querySelector(".debug-line").textContent = err.message || String(err);
+        }
+
+        enToViLog.scrollTop = enToViLog.scrollHeight;
+        statusEn.textContent = isListeningEn ? "Đang nghe tiếng Anh..." : "Đã dừng";
+      });
+    }
+
+    function finishListeningAndTranslate() {
+      const pendingPhrase = (
+        latestInterimEn ||
+        (liveEnBox.textContent && liveEnBox.textContent !== "—" ? liveEnBox.textContent.trim() : "")
+      ).trim();
+      latestInterimEn = "";
+      liveEnBox.textContent = "—";
+      stopEnListener();
+      if (pendingPhrase) {
+        enqueueTranslatedEnSentence(pendingPhrase);
+      } else {
+        statusEn.textContent = "Đã dừng";
       }
     }
 
-    function startListening(mode, opts = {}) {
-      const fromAuto = Boolean(opts.fromAuto);
-      const statusEl = mode === "vi2en" ? statusVi2En : statusEn2Vi;
-      const btnEl = mode === "vi2en" ? btnVi2En : btnEn2Vi;
-      const sourceBox = mode === "vi2en" ? heardViEl : heardEnEl;
-
-      if (!fromAuto) {
-        clearAutoListenTimer();
-      }
-
+    function startEnListener() {
       if (!SpeechRecognition) {
-        statusEl.textContent = "Trình duyệt không hỗ trợ SpeechRecognition";
+        statusEn.textContent = "Trình duyệt không hỗ trợ nhận diện giọng nói";
         return;
       }
 
-      if (activeMode === mode) {
-        stopRecognition(false);
-        statusEl.textContent = "Đã dừng";
-        return;
-      }
+      if (isListeningVi) stopViListener();
 
-      stopRecognition(fromAuto);
-      if (!fromAuto && "speechSynthesis" in window) {
-        window.speechSynthesis.cancel();
-        // Mở khóa âm thanh trên iPhone/Safari ngay tại thao tác chạm của người dùng
-        try {
-          const unlockUtter = new SpeechSynthesisUtterance("");
-          unlockUtter.volume = 0;
-          window.speechSynthesis.speak(unlockUtter);
-        } catch (e) {}
-      }
-      activeMode = mode;
+      isListeningEn = true;
+      lastQueuedSentenceKey = "";
+      latestInterimEn = "";
+      setEnButtonsListeningState(true);
+      statusEn.textContent = "Đang nghe tiếng Anh...";
 
       const rec = new SpeechRecognition();
-      recognition = rec;
-      rec.lang = mode === "vi2en" ? "vi-VN" : "en-US";
+      enRec = rec;
+      rec.lang = "en-US";
       rec.interimResults = true;
-      rec.continuous = false;
+      rec.continuous = true;
       rec.maxAlternatives = 1;
 
-      btnEl.classList.add("btn-listening");
-      statusEl.textContent = "Đang khởi động micro...";
-
-      let finalTranscript = "";
-
-      rec.onstart = () => {
-        statusEl.textContent = mode === "vi2en" ? "Đang nghe tiếng Việt..." : "Đang nghe tiếng Anh...";
-      };
-
       rec.onresult = (event) => {
-        let interim = "";
+        let interimText = "";
         for (let i = event.resultIndex; i < event.results.length; i++) {
           const transcript = event.results[i][0].transcript;
-          if (event.results[i].isFinal) finalTranscript += transcript;
-          else interim += transcript;
+          if (event.results[i].isFinal) {
+            const finalSentence = transcript.trim();
+            latestInterimEn = "";
+            if (finalSentence) {
+              enqueueTranslatedEnSentence(finalSentence);
+            }
+          } else {
+            interimText += transcript;
+          }
         }
-        sourceBox.textContent = (finalTranscript + interim).trim() || "—";
+        const trimmedInterim = interimText.trim();
+        if (trimmedInterim) {
+          latestInterimEn = trimmedInterim;
+        }
+        liveEnBox.textContent = trimmedInterim || "—";
       };
 
       rec.onerror = (event) => {
-        const errCode = event.error || "không xác định";
-        if (errCode === "not-allowed") {
-          statusEl.textContent = "Bị chặn micro (hãy mở qua http://localhost hoặc cho phép Mic)";
-        } else if (errCode === "network") {
-          statusEl.textContent = "Lỗi mạng nhận diện giọng nói (network)";
-        } else {
-          statusEl.textContent = "Lỗi micro: " + errCode;
+        const err = event.error || "";
+        if (err === "no-speech" && isListeningEn && chkContinuousEn.checked) {
+          return;
         }
-        stopRecognition();
+        statusEn.textContent = "Lỗi micro: " + err;
+        stopEnListener();
       };
 
       rec.onend = () => {
-        const spoken = finalTranscript.trim() || sourceBox.textContent.trim();
-        stopRecognition();
-        handleSpokenText(mode, spoken);
+        const leftover = latestInterimEn.trim();
+        latestInterimEn = "";
+        liveEnBox.textContent = "—";
+        if (leftover && !isListeningEn) {
+          enqueueTranslatedEnSentence(leftover);
+        }
+        if (isListeningEn && chkContinuousEn.checked) {
+          try {
+            rec.start();
+          } catch (e) {
+            stopEnListener();
+            statusEn.textContent = "Đã dừng";
+          }
+        } else {
+          stopEnListener();
+          statusEn.textContent = "Đã dừng";
+        }
       };
 
       try {
         rec.start();
       } catch (e) {
-        statusEl.textContent = "Không thể bật micro: " + e.message;
-        stopRecognition();
+        stopEnListener();
+        statusEn.textContent = "Không bật được micro: " + e.message;
       }
     }
 
-    btnVi2En.addEventListener("click", () => startListening("vi2en"));
-    btnRetryVi.addEventListener("click", () => {
-      clearAutoListenTimer();
-      stopRecognition(false);
-      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
-      heardViEl.textContent = "—";
-      transEnEl.textContent = "—";
-      lastEnglishText = "";
-      statusVi2En.textContent = "Đang nghe lại tiếng Việt...";
-      statusEn2Vi.textContent = "Sẵn sàng";
-      startListening("vi2en");
-    });
-    btnEn2Vi.addEventListener("click", () => startListening("en2vi"));
-
-    btnSpeakEn.addEventListener("click", () => {
-      const txt = lastEnglishText || transEnEl.textContent.trim();
-      if (txt && txt !== "—") speakText(txt, "en", enVoiceSelect);
+    btnToggleEn.addEventListener("click", () => {
+      if (isListeningEn) {
+        finishListeningAndTranslate();
+      } else {
+        startEnListener();
+      }
     });
 
-    btnSpeakVi.addEventListener("click", () => {
-      const txt = lastVietnameseText || transViEl.textContent.trim();
-      if (txt && txt !== "—") speakText(txt, "vi", viVoiceSelect);
+    btnFinishEn.addEventListener("click", () => {
+      if (isListeningEn) {
+        finishListeningAndTranslate();
+      }
     });
 
-    function unlockMobileSpeech() {
-      if (!("speechSynthesis" in window)) return;
+    btnClearEn.addEventListener("click", () => {
+      enEntries = [];
+      lastQueuedSentenceKey = "";
+      latestInterimEn = "";
+      hasEnEntries = false;
+      liveEnBox.textContent = "—";
+      enToViLog.innerHTML = '<div style="color: #64748b; font-size: 0.88rem;">Chưa có câu nào. Bấm "Bắt đầu nghe tiếng Anh" để thu từng câu...</div>';
+    });
+
+    btnCopyEnLog.addEventListener("click", () => {
+      if (!enEntries.length) return;
+      const text = enEntries.map(x => "EN: " + x.en + "\nVI: " + x.vi).join("\n\n");
+      navigator.clipboard?.writeText(text);
+      statusEn.textContent = "Đã sao chép!";
+      setTimeout(() => { if (!isListeningEn) statusEn.textContent = "Sẵn sàng"; }, 1500);
+    });
+
+    // ==================== PHẦN 2: VIẾT / ĐỌC ĐOẠN VĂN VIỆT -> CHỮ ANH ====================
+    const viParagraphInput = document.getElementById("viParagraphInput");
+    const btnMicVi = document.getElementById("btnMicVi");
+    const btnTranslateVi = document.getElementById("btnTranslateVi");
+    const btnClearViInput = document.getElementById("btnClearViInput");
+    const btnCopyEnOut = document.getElementById("btnCopyEnOut");
+    const enParagraphOutput = document.getElementById("enParagraphOutput");
+    const statusVi = document.getElementById("statusVi");
+
+    let viRec = null;
+    let isListeningVi = false;
+
+    function stopViListener() {
+      isListeningVi = false;
+      btnMicVi.classList.remove("btn-listening");
+      btnMicVi.textContent = "🎤 Đọc đoạn tiếng Việt";
+      if (viRec) {
+        try { viRec.abort(); } catch (e) {}
+        viRec = null;
+      }
+    }
+
+    function startViListener() {
+      if (!SpeechRecognition) {
+        statusVi.textContent = "Trình duyệt không hỗ trợ nhận diện giọng nói";
+        return;
+      }
+      if (isListeningEn) stopEnListener();
+
+      isListeningVi = true;
+      btnMicVi.classList.add("btn-listening");
+      btnMicVi.textContent = "⏹ Dừng đọc tiếng Việt";
+      statusVi.textContent = "Đang nghe đoạn tiếng Việt...";
+
+      const rec = new SpeechRecognition();
+      viRec = rec;
+      rec.lang = "vi-VN";
+      rec.interimResults = true;
+      rec.continuous = true;
+      rec.maxAlternatives = 1;
+
+      const baseText = viParagraphInput.value.trim();
+      let accumulatedFinal = "";
+
+      rec.onresult = (event) => {
+        let interim = "";
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            const cleanPart = transcript.trim();
+            if (cleanPart) {
+              accumulatedFinal += (accumulatedFinal ? ". " : "") + cleanPart;
+            }
+          } else {
+            interim += transcript;
+          }
+        }
+        const combinedSpoken = (accumulatedFinal + (interim ? " " + interim.trim() : "")).trim();
+        viParagraphInput.value = baseText
+          ? (baseText + (combinedSpoken ? "\n" + combinedSpoken : ""))
+          : combinedSpoken;
+      };
+
+      rec.onerror = (event) => {
+        if (event.error === "no-speech" && isListeningVi) return;
+        statusVi.textContent = "Lỗi micro: " + (event.error || "");
+        stopViListener();
+      };
+
+      rec.onend = () => {
+        if (isListeningVi) {
+          try {
+            rec.start();
+          } catch (e) {
+            stopViListener();
+            statusVi.textContent = "Đã dừng đọc";
+          }
+        } else {
+          stopViListener();
+          statusVi.textContent = "Đã dừng đọc";
+        }
+      };
+
       try {
-        window.speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance("");
-        u.volume = 0;
-        window.speechSynthesis.speak(u);
-      } catch (e) {}
+        rec.start();
+      } catch (e) {
+        stopViListener();
+        statusVi.textContent = "Không bật được micro: " + e.message;
+      }
     }
 
-    btnManualVi2En.addEventListener("click", () => {
-      const txt = inputViManual.value.trim();
-      if (txt) {
-        unlockMobileSpeech();
-        handleSpokenText("vi2en", txt);
+    btnMicVi.addEventListener("click", () => {
+      if (isListeningVi) {
+        stopViListener();
+        statusVi.textContent = "Đã dừng đọc";
+      } else {
+        startViListener();
       }
     });
-    inputViManual.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") btnManualVi2En.click();
-    });
 
-    btnManualEn2Vi.addEventListener("click", () => {
-      const txt = inputEnManual.value.trim();
-      if (txt) {
-        unlockMobileSpeech();
-        handleSpokenText("en2vi", txt);
+    async function runTranslateViParagraph() {
+      if (isListeningVi) stopViListener();
+      const raw = viParagraphInput.value.trim();
+      if (!raw) {
+        statusVi.textContent = "Hãy nhập hoặc đọc đoạn văn tiếng Việt trước";
+        return;
+      }
+      statusVi.textContent = "Đang dịch đoạn văn...";
+      enParagraphOutput.textContent = "Đang dịch...";
+      try {
+        const lines = raw.split(/\n+/);
+        const translatedLines = [];
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (trimmed) {
+            const res = await translateText(trimmed, "vi", "en");
+            translatedLines.push(res && res.text ? res.text : "");
+          }
+        }
+        enParagraphOutput.textContent = translatedLines.join("\n\n") || "—";
+        statusVi.textContent = "Đã dịch xong";
+      } catch (err) {
+        enParagraphOutput.textContent = "Lỗi dịch: " + err.message;
+        statusVi.textContent = "Dịch thất bại";
+      }
+    }
+
+    btnTranslateVi.addEventListener("click", runTranslateViParagraph);
+    viParagraphInput.addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        runTranslateViParagraph();
       }
     });
-    inputEnManual.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") btnManualEn2Vi.click();
+
+    btnClearViInput.addEventListener("click", () => {
+      if (isListeningVi) stopViListener();
+      viParagraphInput.value = "";
+      enParagraphOutput.textContent = "—";
+      statusVi.textContent = "Sẵn sàng";
     });
 
-    btnTestAudio.addEventListener("click", () => {
-      speakText("Hello, xin chào. Loa đang hoạt động bình thường.", "en", enVoiceSelect);
-    });
-
-    btnClearHist.addEventListener("click", () => {
-      historyList.innerHTML = "Chưa có câu nào.";
-      hasHistory = false;
+    btnCopyEnOut.addEventListener("click", () => {
+      const txt = enParagraphOutput.textContent.trim();
+      if (!txt || txt === "—") return;
+      navigator.clipboard?.writeText(txt);
+      statusVi.textContent = "Đã sao chép bản dịch!";
+      setTimeout(() => { statusVi.textContent = "Sẵn sàng"; }, 1500);
     });
   </script>
 </body>
