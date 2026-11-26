@@ -286,7 +286,7 @@
       </div>
       <div class="control-group">
         <input id="autoListenEnCheckbox" type="checkbox" checked />
-        <label for="autoListenEnCheckbox">Tự động nghe EN sau khi dịch xong</label>
+        <label for="autoListenEnCheckbox">Tự động nghe tiếng Anh sau khi dịch xong</label>
       </div>
     </div>
 
@@ -294,7 +294,7 @@
       <!-- CHIỀU 1: BẠN NÓI TIẾNG VIỆT -> DỊCH SANG TIẾNG ANH -->
       <div class="card">
         <div class="card-header">
-          <span class="badge">BẠN (TIẾNG VIỆT) → MÁY NÓI (TIẾNG ANH)</span>
+          <span class="badge">BẠN NÓI (TIẾNG VIỆT) → MÁY NÓI (TIẾNG ANH)</span>
           <span id="statusVi2En" class="status">Sẵn sàng</span>
         </div>
 
@@ -310,6 +310,7 @@
 
         <div class="btn-row">
           <button id="btnVi2En" class="btn-mic-vi">🎤 Nói Tiếng Việt</button>
+          <button id="btnRetryVi" class="btn-sec" title="Xóa câu nói sai và thu âm lại tiếng Việt">🔄 Nói lại tiếng Việt</button>
           <button id="btnSpeakEn" class="btn-sec">🔊 Đọc lại tiếng Anh</button>
         </div>
 
@@ -322,7 +323,7 @@
       <!-- CHIỀU 2: NGƯỜI NGOÀI NÓI TIẾNG ANH -> DỊCH SANG TIẾNG VIỆT -->
       <div class="card">
         <div class="card-header">
-          <span class="badge">NGƯỜI NGOÀI (TIẾNG ANH) → MÁY NÓI (TIẾNG VIỆT)</span>
+          <span class="badge">NGƯỜI NGOÀI NÓI (TIẾNG ANH) → MÁY NÓI (TIẾNG VIỆT)</span>
           <span id="statusEn2Vi" class="status">Sẵn sàng</span>
         </div>
 
@@ -357,7 +358,7 @@
     </div>
 
     <div class="note">
-      * Bấm nút <strong>📘 HƯỚNG DẪN SỬ DỤNG</strong> ở góc trên bên phải để xem chi tiết cách dùng, cách cấp quyền Microphone trên Edge/Chrome và mẹo giao tiếp hai chiều.
+      * Bấm nút <strong>📘 HƯỚNG DẪN SỬ DỤNG</strong> ở góc trên bên phải để xem chi tiết cách dùng.
     </div>
   </div>
 
@@ -369,17 +370,12 @@
         <button id="btnCloseGuide" class="btn-sec" style="padding: 6px 12px;">✕ Đóng</button>
       </div>
       <ol class="guide-list">
-        <li><strong>Chuẩn bị trước khi nói:</strong> Dùng trình duyệt <strong>Microsoft Edge</strong> hoặc <strong>Google Chrome</strong>, bấm <strong>🔊 Kiểm tra loa</strong> để chắc chắn máy phát tiếng rõ, và bấm <strong>Allow (Cho phép)</strong> khi trình duyệt hỏi quyền truy cập <strong>Microphone</strong>.</li>
-        <li><strong>Chiều 1 — Bạn nói tiếng Việt → Máy dịch &amp; đọc tiếng Anh:</strong> Bấm nút <strong>🎤 Nói Tiếng Việt</strong> (nút chuyển sang màu đỏ nhấp nháy), nói rõ câu tiếng Việt của bạn rồi ngừng lại. Máy sẽ hiện câu tiếng Việt, dịch sang tiếng Anh, hiển thị chữ màu xanh lá và tự động đọc to bằng tiếng Anh.</li>
-        <li><strong>Tự động chuyển sang nghe người đối diện:</strong> Khi ô <strong>Tự động nghe EN sau khi dịch xong</strong> được tích chọn, ngay sau khi máy đọc xong câu tiếng Anh, mục <strong>NGƯỜI NGOÀI (EN) → MÁY NÓI (VI)</strong> sẽ tự bật micro để chờ người đối diện trả lời bằng tiếng Anh (bạn vẫn có thể bấm nút <strong>🎧 Nghe Tiếng Anh</strong> thủ công bất cứ lúc nào).</li>
+                <li><strong>Chiều 1 — Bạn nói tiếng Việt → Máy dịch &amp; đọc tiếng Anh:</strong> Bấm nút <strong>🎤 Nói Tiếng Việt</strong> (nút chuyển sang màu đỏ nhấp nháy), nói rõ câu tiếng Việt của bạn rồi ngừng lại. Máy sẽ hiện câu tiếng Việt, dịch sang tiếng Anh, hiển thị chữ màu xanh lá và tự động đọc to bằng tiếng Anh.</li>
+        <li><strong>Tự động chuyển sang nghe người đối diện:</strong> Khi ô <strong>Tự động nghe tiếng Anh sau khi dịch xong</strong> được tích chọn, ngay sau khi máy đọc xong câu tiếng Anh, mục <strong>NGƯỜI NGOÀI NÓI (TIẾNG ANH) → MÁY NÓI (TIẾNG VIỆT)</strong> sẽ tự bật micro để chờ người đối diện trả lời bằng tiếng Anh (bạn vẫn có thể bấm nút <strong>🎧 Nghe Tiếng Anh</strong> thủ công bất cứ lúc nào).</li>
         <li><strong>Chiều 2 — Người ngoài nói tiếng Anh → Máy dịch &amp; đọc tiếng Việt:</strong> Khi micro ở khung bên phải đang bật (nút đỏ nhấp nháy), người đối diện nói tiếng Anh. Máy sẽ nhận diện chữ tiếng Anh, dịch sang tiếng Việt (chữ màu vàng) và tự động đọc to tiếng Việt cho bạn nghe.</li>
-        <li><strong>Nghe lại, chỉnh giọng &amp; nhập chữ dự phòng:</strong> Dùng thanh <strong>Giọng Anh / Giọng Việt / Tốc độ</strong> để chọn giọng đọc phù hợp; bấm <strong>🔊 Đọc lại EN</strong> hoặc <strong>🔊 Đọc lại VI</strong> để phát lại; hoặc gõ trực tiếp vào ô nhập bên dưới từng khung rồi nhấn <code>Enter</code> nếu đang ở nơi ồn ào hoặc chưa bật micro.</li>
+        <li><strong>Nghe lại, chỉnh giọng &amp; nhập chữ dự phòng:</strong> Dùng thanh <strong>Giọng Anh / Giọng Việt / Tốc độ</strong> để chọn giọng đọc phù hợp; bấm <strong>🔊 Đọc lại tiếng Anh</strong> hoặc <strong>🔊 Đọc lại tiếng Việt</strong> để phát lại; hoặc gõ trực tiếp vào ô nhập bên dưới từng khung rồi nhấn <code>Enter</code> nếu đang ở nơi ồn ào hoặc chưa bật micro.</li>
       </ol>
-      <div class="guide-tip">
-        <strong>Mẹo khắc phục nếu mở file trực tiếp (<code>file:///</code>) trên máy tính mà micro không bật:</strong><br/>
-        Một số trình duyệt hạn chế quyền Microphone với file cục bộ. Bạn có thể mở thư mục chứa file bằng <strong>VS Code → Go Live (Live Server)</strong>, hoặc mở Terminal/PowerShell tại thư mục chứa file, gõ <code>python -m http.server 8000</code> rồi truy cập <code>http://localhost:8000</code> (hoặc tải file lên trang web <code>https://</code>).
-      </div>
-    </div>
+          </div>
   </div>
 
   <script>
@@ -394,6 +390,7 @@
     const btnTestAudio = document.getElementById("btnTestAudio");
 
     const btnVi2En = document.getElementById("btnVi2En");
+    const btnRetryVi = document.getElementById("btnRetryVi");
     const btnEn2Vi = document.getElementById("btnEn2Vi");
     const btnSpeakEn = document.getElementById("btnSpeakEn");
     const btnSpeakVi = document.getElementById("btnSpeakVi");
@@ -439,13 +436,7 @@
       const hasSR = Boolean(SpeechRecognition);
       const hasTTS = "speechSynthesis" in window;
 
-      if (proto === "file:" || !hasSR) {
-        envBanner.classList.add("banner-warn");
-        envInfo.textContent = `Giao thức: ${proto} | Nhận diện giọng nói: ${hasSR ? "Có" : "Không"} | Đọc giọng nói: ${hasTTS ? "Có" : "Không"} — Nếu micro không chạy ở file://, hãy mở qua http://localhost hoặc https://`;
-      } else {
-        envInfo.textContent = `Sẵn sàng (${proto}) | Nhận diện giọng nói: Có | Đọc giọng nói: ${hasTTS ? "Có" : "Không"}`;
-      }
-    }
+          }
     updateEnvironmentBanner();
 
     rateRange.addEventListener("input", () => {
@@ -736,6 +727,17 @@
     }
 
     btnVi2En.addEventListener("click", () => startListening("vi2en"));
+    btnRetryVi.addEventListener("click", () => {
+      clearAutoListenTimer();
+      stopRecognition(false);
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+      heardViEl.textContent = "—";
+      transEnEl.textContent = "—";
+      lastEnglishText = "";
+      statusVi2En.textContent = "Đang nghe lại tiếng Việt...";
+      statusEn2Vi.textContent = "Sẵn sàng";
+      startListening("vi2en");
+    });
     btnEn2Vi.addEventListener("click", () => startListening("en2vi"));
 
     btnSpeakEn.addEventListener("click", () => {
