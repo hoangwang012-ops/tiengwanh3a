@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dịch Nghe Tiếng Anh & Đoạn Văn Việt ↔ Anh</title>
+  <title>Dịch Nghe Tiếng Anh, Đoạn Văn & Hình Ảnh Việt ↔ Anh</title>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <style>
     * { box-sizing: border-box; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
     body {
@@ -13,7 +14,7 @@
       padding: 16px;
     }
     .app {
-      max-width: 980px;
+      max-width: 1020px;
       margin: 0 auto;
     }
     .header-row {
@@ -24,8 +25,13 @@
       flex-wrap: wrap;
       margin-bottom: 6px;
     }
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
     h1 {
-      font-size: 1.4rem;
+      font-size: 1.35rem;
       margin: 0;
     }
     .sub {
@@ -63,6 +69,9 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
+    }
+    .card-full {
+      margin-top: 16px;
     }
     .card-header {
       display: flex;
@@ -115,12 +124,24 @@
       font-size: 0.96rem;
       line-height: 1.5;
     }
-    textarea:focus {
+    textarea:focus, select:focus {
       outline: none;
       border-color: #38bdf8;
     }
+    select {
+      background: #0f172a;
+      color: #f8fafc;
+      border: 1px solid #475569;
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-size: 0.88rem;
+    }
     .result-en {
       color: #4ade80;
+      font-weight: 600;
+    }
+    .result-vi {
+      color: #fbbf24;
       font-weight: 600;
     }
     .btn-row {
@@ -147,6 +168,9 @@
     .btn-done-en { background: #d97706; color: #fff; flex: 1; }
     .btn-vi-mic { background: #2563eb; color: #fff; flex: 1; }
     .btn-vi-trans { background: #16a34a; color: #fff; flex: 1; }
+    .btn-img-top { background: #e11d48; color: #fff; padding: 8px 14px; }
+    .btn-cam { background: #e11d48; color: #fff; flex: 1; }
+    .btn-gallery { background: #0284c7; color: #fff; flex: 1; }
     .btn-sec { background: #334155; color: #f8fafc; }
     .btn-guide { background: #7c3aed; color: #fff; padding: 8px 14px; }
     .btn-listening { background: #dc2626 !important; animation: pulse 1.2s infinite; }
@@ -180,6 +204,51 @@
       gap: 8px;
       font-size: 0.84rem;
       color: #cbd5e1;
+      flex-wrap: wrap;
+    }
+    .img-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 780px) {
+      .img-grid { grid-template-columns: 1fr; }
+    }
+    .preview-frame {
+      background: #0f172a;
+      border: 1px dashed #475569;
+      border-radius: 10px;
+      min-height: 180px;
+      max-height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 8px;
+      color: #64748b;
+      font-size: 0.88rem;
+      text-align: center;
+    }
+    .preview-frame img {
+      max-width: 100%;
+      max-height: 280px;
+      border-radius: 8px;
+      object-fit: contain;
+    }
+    .progress-wrap {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 999px;
+      height: 10px;
+      overflow: hidden;
+      display: none;
+    }
+    .progress-wrap.active { display: block; }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #e11d48, #f59e0b);
+      transition: width 0.2s ease;
     }
     .modal-overlay {
       display: none;
@@ -223,10 +292,13 @@
 <body>
   <div class="app">
     <div class="header-row">
-      <h1>📝PHIÊN DỊCH ANH - VIỆT</h1>
-      <button id="btnOpenGuide" class="btn-guide" type="button">📘 HƯỚNG DẪN</button>
+      <h1>📝 Dịch Nghe Tiếng Anh, Đoạn Văn &amp; Hình Ảnh Việt ↔ Anh</h1>
+      <div class="header-actions">
+        <button id="btnQuickImgTranslate" class="btn-img-top" type="button">📷 DỊCH BẰNG HÌNH ẢNH</button>
+        <button id="btnOpenGuide" class="btn-guide" type="button">📘 HƯỚNG DẪN</button>
+      </div>
     </div>
-    <div class="sub">1. Nghe tiếng Anh bên ngoài → Hiện chữ tiếng Việt từng câu | 2. Viết hoặc đọc đoạn văn tiếng Việt → Hiện chữ tiếng Anh</div>
+    <div class="sub">1. Nghe tiếng Anh → Chữ tiếng Việt | 2. Đoạn văn Việt → Chữ Anh | 3. Chụp camera hoặc chọn ảnh để dịch chữ trên ảnh</div>
 
     <div id="envBanner" class="banner">Đang kiểm tra trình duyệt...</div>
 
@@ -265,17 +337,17 @@
         </div>
       </div>
 
-      <!-- CHỨC NĂNG 2: VIẾT HOẶC ĐỌC ĐOẠN VĂN TIẾNG VIỆT -> CHỮ TIẾNG ANH -->
+      <!-- CHỨC NĂNG 2: VIẾT HOẶC ĐỌC ĐOẠN VĂN TIẾNG VIỆT -> CHỮ ANH -->
       <div class="card">
         <div class="card-header">
-          <span class="badge">2. VIẾT / ĐỌC ĐOẠN VĂN TIẾNG VIỆT → CHỮ TIẾNG ANH</span>
+          <span class="badge">2. VIẾT / ĐỌC ĐOẠN VĂN VIỆT → CHỮ ANH</span>
           <span id="statusVi" class="status">Sẵn sàng</span>
         </div>
 
         <div>
           <div class="label">
             <span>Đoạn văn tiếng Việt (nhập chữ hoặc bấm mic để đọc thêm):</span>
-            <button id="btnClearViInput" class="btn-sec" type="button" style="padding: 3px 8px; font-size: 0.76rem;">Xóa đoạn tiếng Việt</button>
+            <button id="btnClearViInput" class="btn-sec" type="button" style="padding: 3px 8px; font-size: 0.76rem;">Xóa đoạn Việt</button>
           </div>
           <textarea id="viParagraphInput" placeholder="Nhập đoạn văn tiếng Việt vào đây, hoặc bấm nút '🎤 Đọc đoạn tiếng Việt' bên dưới để đọc nhiều câu liên tiếp..."></textarea>
         </div>
@@ -288,9 +360,65 @@
         <div>
           <div class="label">
             <span>Bản dịch tiếng Anh (chữ):</span>
-            <button id="btnCopyEnOut" class="btn-sec" type="button" style="padding: 3px 8px; font-size: 0.76rem;">📋 Sao chép đoạn văn tiếng Anh</button>
+            <button id="btnCopyEnOut" class="btn-sec" type="button" style="padding: 3px 8px; font-size: 0.76rem;">📋 Sao chép EN</button>
           </div>
           <div id="enParagraphOutput" class="box result-en" style="min-height: 110px;">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHỨC NĂNG 3: DỊCH BẰNG HÌNH ẢNH (CAMERA ĐIỆN THOẠI / CHỌN ẢNH) -->
+    <div id="imageTranslateSection" class="card card-full">
+      <div class="card-header">
+        <span class="badge">3. 📷 DỊCH BẰNG HÌNH ẢNH (CAMERA ĐIỆN THOẠI / ẢNH CHỤP)</span>
+        <span id="statusImg" class="status">Sẵn sàng</span>
+      </div>
+
+      <div class="opt-row">
+        <label for="imgDirectionSelect"><strong>Chiều dịch chữ trên ảnh:</strong></label>
+        <select id="imgDirectionSelect">
+          <option value="en-vi" selected>Tiếng Anh trên ảnh → Dịch sang Tiếng Việt</option>
+          <option value="vi-en">Tiếng Việt trên ảnh → Dịch sang Tiếng Anh</option>
+        </select>
+      </div>
+
+      <!-- Input ẩn mở camera sau trên điện thoại và input chọn ảnh từ thư viện -->
+      <input id="cameraInput" type="file" accept="image/*" capture="environment" style="display:none;" />
+      <input id="galleryInput" type="file" accept="image/*" style="display:none;" />
+
+      <div class="btn-row">
+        <button id="btnCaptureCamera" class="btn-cam" type="button">📷 Chụp camera để dịch ngay</button>
+        <button id="btnPickGallery" class="btn-gallery" type="button">🖼️ Chọn ảnh có sẵn</button>
+        <button id="btnReTranslateImg" class="btn-vi-trans" type="button">🌐 Dịch lại chữ đã nhận</button>
+        <button id="btnClearImg" class="btn-sec" type="button">🗑️ Xóa ảnh</button>
+      </div>
+
+      <div id="ocrProgressWrap" class="progress-wrap">
+        <div id="ocrProgressBar" class="progress-bar"></div>
+      </div>
+
+      <div class="img-grid">
+        <div>
+          <div class="label">Ảnh đã chụp / đã chọn:</div>
+          <div id="imgPreviewBox" class="preview-frame">Chưa có ảnh. Trên điện thoại, bấm "📷 Chụp camera để dịch ngay" để chụp biển báo, sách, thực đơn...</div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div>
+            <div class="label">
+              <span>Chữ nhận diện được từ ảnh (có thể sửa tay nếu mờ):</span>
+              <button id="btnCopyOcrText" class="btn-sec" type="button" style="padding: 3px 8px; font-size: 0.76rem;">📋 Sao chép</button>
+            </div>
+            <textarea id="ocrTextOutput" style="min-height: 82px;" placeholder="Văn bản quét từ hình ảnh sẽ hiện ở đây..."></textarea>
+          </div>
+
+          <div>
+            <div class="label">
+              <span>Kết quả dịch từ hình ảnh:</span>
+              <button id="btnCopyImgTrans" class="btn-sec" type="button" style="padding: 3px 8px; font-size: 0.76rem;">📋 Sao chép bản dịch</button>
+            </div>
+            <div id="imgTranslatedOutput" class="box result-vi" style="min-height: 86px;">—</div>
+          </div>
         </div>
       </div>
     </div>
@@ -304,9 +432,10 @@
         <button id="btnCloseGuide" class="btn-sec" type="button" style="padding:6px 12px;">✕ Đóng</button>
       </div>
       <ol class="guide-list">
-        <li><strong>Chức năng 1 (Nghe tiếng Anh → Dịch chữ tiếng Việt từng câu):</strong> Bấm <strong>🎧 Bắt đầu nghe tiếng Anh</strong>. Khi người nói tiếng Anh đọc xong, bạn có thể bấm <strong>✅ Dừng &amp; dịch câu đã đọc</strong> để chốt dừng nghe ngay và dịch phần tiếng Anh vừa đọc sang tiếng Việt, hoặc bấm <strong>⏹ Dừng nghe tiếng Anh</strong>.</li>
-        <li><strong>Chức năng 2 (Viết hoặc đọc đoạn văn tiếng Việt → Dịch chữ tiếng Anh):</strong> Gõ đoạn văn tiếng Việt vào ô hoặc bấm <strong>🎤 Đọc đoạn tiếng Việt</strong> để đọc nhiều câu liên tục, rồi bấm <strong>🌐 Dịch sang tiếng Anh</strong> (hoặc nhấn <code>Ctrl + Enter</code>).</li>
-        
+        <li><strong>Chức năng 1 (Nghe tiếng Anh → Dịch chữ tiếng Việt từng câu):</strong> Bấm <strong>🎧 Bắt đầu nghe tiếng Anh</strong>. Khi người nói tiếng Anh đọc xong, bấm <strong>✅ Dừng &amp; dịch câu đã đọc</strong> để dừng ngay và dịch phần tiếng Anh vừa đọc sang tiếng Việt.</li>
+        <li><strong>Chức năng 2 (Viết hoặc đọc đoạn văn tiếng Việt → Dịch chữ tiếng Anh):</strong> Gõ đoạn văn tiếng Việt vào ô hoặc bấm <strong>🎤 Đọc đoạn tiếng Việt</strong> để đọc nhiều câu liên tục, rồi bấm <strong>🌐 Dịch sang tiếng Anh</strong>.</li>
+        <li><strong>Chức năng 3 (📷 DỊCH BẰNG HÌNH ẢNH cho điện thoại):</strong> Bấm nút <strong>📷 DỊCH BẰNG HÌNH ẢNH</strong> trên cùng (hoặc <strong>📷 Chụp camera để dịch ngay</strong> ở mục 3). Trên điện thoại (iPhone / Android), trình duyệt sẽ mở thẳng camera sau để bạn chụp trang sách, bảng hiệu, hướng dẫn sử dụng; máy tự quét chữ (OCR) và dịch sang ngôn ngữ bạn chọn.</li>
+        <li><strong>Lưu ý quyền truy cập:</strong> Nên mở file qua trang web <code>https://</code> hoặc <code>http://localhost</code> để điện thoại cho phép mở camera và micro ổn định nhất.</li>
       </ol>
     </div>
   </div>
@@ -322,7 +451,13 @@
     (function checkEnv() {
       const proto = location.protocol;
       const hasSR = Boolean(SpeechRecognition);
-          })();
+      if (proto === "file:" || !hasSR) {
+        envBanner.classList.add("banner-warn");
+        envBanner.textContent = "Giao thức: " + proto + " | Nhận diện giọng nói: " + (hasSR ? "Có" : "Không") + " — Nếu micro không chạy ở file://, hãy chạy qua http://localhost hoặc https://.";
+      } else {
+        envBanner.textContent = "Sẵn sàng (" + proto + ") | Nhận diện giọng nói: Có | Dịch văn bản & Hình ảnh: Sẵn sàng";
+      }
+    })();
 
     btnOpenGuide.addEventListener("click", () => guideModal.classList.add("open"));
     btnCloseGuide.addEventListener("click", () => guideModal.classList.remove("open"));
@@ -355,7 +490,7 @@
 
     async function fetchJsonWithTimeout(url, options, timeoutMs) {
       const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), timeoutMs || 6000);
+      const timer = setTimeout(() => controller.abort(), timeoutMs || 6500);
       try {
         const res = await fetch(url, Object.assign({}, options || {}, { signal: controller.signal }));
         if (!res.ok) throw new Error("HTTP " + res.status);
@@ -377,7 +512,7 @@
         const urlMM = "https://api.mymemory.translated.net/get?q="
           + encodeURIComponent(cleanText)
           + "&langpair=" + encodeURIComponent(sourceLang + "|" + targetLang);
-        const dataMM = await fetchJsonWithTimeout(urlMM, null, 6000);
+        const dataMM = await fetchJsonWithTimeout(urlMM, null, 6500);
         const outMM = dataMM && dataMM.responseData && dataMM.responseData.translatedText
           ? dataMM.responseData.translatedText.trim()
           : "";
@@ -397,7 +532,7 @@
           + encodeURIComponent(sourceLang)
           + "&tl=" + encodeURIComponent(targetLang)
           + "&dt=t&q=" + encodeURIComponent(cleanText);
-        const dataGtx = await fetchJsonWithTimeout(urlGtx, null, 6000);
+        const dataGtx = await fetchJsonWithTimeout(urlGtx, null, 6500);
         if (Array.isArray(dataGtx) && Array.isArray(dataGtx[0])) {
           const outGtx = dataGtx[0].map(part => part && part[0] ? part[0] : "").join("").trim();
           if (outGtx) {
@@ -417,7 +552,7 @@
           + encodeURIComponent(sourceLang)
           + "&tl=" + encodeURIComponent(targetLang)
           + "&q=" + encodeURIComponent(cleanText);
-        const dataC5 = await fetchJsonWithTimeout(urlC5, null, 6000);
+        const dataC5 = await fetchJsonWithTimeout(urlC5, null, 6500);
         let outC5 = "";
         if (Array.isArray(dataC5) && typeof dataC5[0] === "string") {
           outC5 = dataC5[0].trim();
@@ -440,7 +575,7 @@
           + encodeURIComponent(sourceLang) + "/"
           + encodeURIComponent(targetLang) + "/"
           + encodeURIComponent(cleanText);
-        const dataLingva = await fetchJsonWithTimeout(urlLingva, null, 6000);
+        const dataLingva = await fetchJsonWithTimeout(urlLingva, null, 6500);
         const outLingva = dataLingva && typeof dataLingva.translation === "string"
           ? dataLingva.translation.trim()
           : "";
@@ -826,6 +961,175 @@
       navigator.clipboard?.writeText(txt);
       statusVi.textContent = "Đã sao chép bản dịch!";
       setTimeout(() => { statusVi.textContent = "Sẵn sàng"; }, 1500);
+    });
+
+    // ==================== PHẦN 3: DỊCH BẰNG HÌNH ẢNH (CAMERA / ẢNH CHỤP) ====================
+    const btnQuickImgTranslate = document.getElementById("btnQuickImgTranslate");
+    const imageTranslateSection = document.getElementById("imageTranslateSection");
+    const imgDirectionSelect = document.getElementById("imgDirectionSelect");
+    const cameraInput = document.getElementById("cameraInput");
+    const galleryInput = document.getElementById("galleryInput");
+    const btnCaptureCamera = document.getElementById("btnCaptureCamera");
+    const btnPickGallery = document.getElementById("btnPickGallery");
+    const btnReTranslateImg = document.getElementById("btnReTranslateImg");
+    const btnClearImg = document.getElementById("btnClearImg");
+    const imgPreviewBox = document.getElementById("imgPreviewBox");
+    const ocrTextOutput = document.getElementById("ocrTextOutput");
+    const imgTranslatedOutput = document.getElementById("imgTranslatedOutput");
+    const btnCopyOcrText = document.getElementById("btnCopyOcrText");
+    const btnCopyImgTrans = document.getElementById("btnCopyImgTrans");
+    const statusImg = document.getElementById("statusImg");
+    const ocrProgressWrap = document.getElementById("ocrProgressWrap");
+    const ocrProgressBar = document.getElementById("ocrProgressBar");
+
+    let currentImgObjectUrl = null;
+
+    btnQuickImgTranslate.addEventListener("click", () => {
+      imageTranslateSection.scrollIntoView({ behavior: "smooth", block: "start" });
+      cameraInput.value = "";
+      cameraInput.click();
+    });
+
+    btnCaptureCamera.addEventListener("click", () => {
+      cameraInput.value = "";
+      cameraInput.click();
+    });
+
+    btnPickGallery.addEventListener("click", () => {
+      galleryInput.value = "";
+      galleryInput.click();
+    });
+
+    async function translateExtractedImageText() {
+      const rawText = (ocrTextOutput.value || "").trim();
+      if (!rawText) {
+        statusImg.textContent = "Chưa có chữ để dịch";
+        return;
+      }
+
+      const dir = imgDirectionSelect.value;
+      const sourceLang = dir === "vi-en" ? "vi" : "en";
+      const targetLang = dir === "vi-en" ? "en" : "vi";
+
+      imgTranslatedOutput.className = "box " + (targetLang === "en" ? "result-en" : "result-vi");
+      imgTranslatedOutput.textContent = "Đang dịch chữ từ ảnh...";
+      statusImg.textContent = "Đang dịch...";
+
+      try {
+        const lines = rawText.split(/\n+/).map(l => l.trim()).filter(Boolean);
+        const translatedLines = [];
+        for (const line of lines) {
+          const res = await translateText(line, sourceLang, targetLang);
+          translatedLines.push(res && res.text ? res.text : "");
+        }
+        imgTranslatedOutput.textContent = translatedLines.join("\n") || "—";
+        statusImg.textContent = "Đã dịch xong ảnh";
+      } catch (err) {
+        imgTranslatedOutput.textContent = "Lỗi dịch: " + (err.message || err);
+        statusImg.textContent = "Dịch ảnh thất bại";
+      }
+    }
+
+    async function processImageFile(file) {
+      if (!file) return;
+
+      if (currentImgObjectUrl) {
+        URL.revokeObjectURL(currentImgObjectUrl);
+      }
+      currentImgObjectUrl = URL.createObjectURL(file);
+      imgPreviewBox.innerHTML = '<img src="' + currentImgObjectUrl + '" alt="Ảnh cần dịch" />';
+
+      ocrTextOutput.value = "";
+      imgTranslatedOutput.textContent = "Đang nhận diện chữ trên ảnh...";
+      statusImg.textContent = "Đang quét chữ (OCR)...";
+      ocrProgressWrap.classList.add("active");
+      ocrProgressBar.style.width = "8%";
+
+      if (!window.Tesseract) {
+        ocrProgressWrap.classList.remove("active");
+        statusImg.textContent = "Không tải được bộ đọc chữ OCR (cần kết nối mạng)";
+        imgTranslatedOutput.textContent = "Không thể tải thư viện nhận diện chữ từ ảnh.";
+        return;
+      }
+
+      const ocrLang = imgDirectionSelect.value === "vi-en" ? "vie" : "eng";
+
+      try {
+        const result = await Tesseract.recognize(file, ocrLang, {
+          logger: (m) => {
+            if (m && typeof m.progress === "number") {
+              const pct = Math.max(8, Math.min(100, Math.round(m.progress * 100)));
+              ocrProgressBar.style.width = pct + "%";
+              statusImg.textContent = "Đang quét chữ (" + pct + "%)...";
+            }
+          }
+        });
+
+        ocrProgressWrap.classList.remove("active");
+        const extracted = (result && result.data && result.data.text ? result.data.text : "")
+          .replace(/\n{3,}/g, "\n\n")
+          .trim();
+
+        if (!extracted) {
+          statusImg.textContent = "Không tìm thấy chữ rõ nét trong ảnh";
+          imgTranslatedOutput.textContent = "Không đọc được chữ từ ảnh. Hãy chụp gần hơn, đủ sáng và rõ nét.";
+          return;
+        }
+
+        ocrTextOutput.value = extracted;
+        await translateExtractedImageText();
+      } catch (err) {
+        ocrProgressWrap.classList.remove("active");
+        statusImg.textContent = "Lỗi quét ảnh: " + (err.message || err);
+        imgTranslatedOutput.textContent = "Lỗi khi nhận diện chữ từ ảnh.";
+      }
+    }
+
+    cameraInput.addEventListener("change", (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (file) processImageFile(file);
+    });
+
+    galleryInput.addEventListener("change", (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (file) processImageFile(file);
+    });
+
+    btnReTranslateImg.addEventListener("click", translateExtractedImageText);
+    imgDirectionSelect.addEventListener("change", () => {
+      if (ocrTextOutput.value.trim()) {
+        translateExtractedImageText();
+      }
+    });
+
+    btnClearImg.addEventListener("click", () => {
+      if (currentImgObjectUrl) {
+        URL.revokeObjectURL(currentImgObjectUrl);
+        currentImgObjectUrl = null;
+      }
+      cameraInput.value = "";
+      galleryInput.value = "";
+      ocrTextOutput.value = "";
+      imgTranslatedOutput.textContent = "—";
+      ocrProgressWrap.classList.remove("active");
+      imgPreviewBox.textContent = "Chưa có ảnh. Trên điện thoại, bấm \"📷 Chụp camera để dịch ngay\" để chụp biển báo, sách, thực đơn...";
+      statusImg.textContent = "Sẵn sàng";
+    });
+
+    btnCopyOcrText.addEventListener("click", () => {
+      const txt = ocrTextOutput.value.trim();
+      if (!txt) return;
+      navigator.clipboard?.writeText(txt);
+      statusImg.textContent = "Đã sao chép chữ quét!";
+      setTimeout(() => { statusImg.textContent = "Sẵn sàng"; }, 1500);
+    });
+
+    btnCopyImgTrans.addEventListener("click", () => {
+      const txt = imgTranslatedOutput.textContent.trim();
+      if (!txt || txt === "—") return;
+      navigator.clipboard?.writeText(txt);
+      statusImg.textContent = "Đã sao chép bản dịch!";
+      setTimeout(() => { statusImg.textContent = "Sẵn sàng"; }, 1500);
     });
   </script>
 </body>
