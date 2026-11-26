@@ -9,8 +9,8 @@
     * { box-sizing: border-box; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
     body {
       margin: 0;
-      background: #0f172a;
-      color: #f8fafc;
+      background: #FFFFCC;
+      color: #FF0000;
       padding: 16px;
     }
     .app {
@@ -35,12 +35,12 @@
       margin: 0;
     }
     .sub {
-      color: #94a3b8;
-      font-size: 0.9rem;
+      color: #0033FF;
+      font-size: 1.2rem;
       margin-bottom: 12px;
     }
     .banner {
-      background: #1e293b;
+      background: #0000CC;
       border: 1px solid #475569;
       border-radius: 10px;
       padding: 10px 14px;
@@ -292,15 +292,15 @@
 <body>
   <div class="app">
     <div class="header-row">
-      <h1>📝 Dịch Nghe Tiếng Anh, Đoạn Văn &amp; Hình Ảnh Việt ↔ Anh</h1>
+      <h1>📝 PHIÊN DỊCH Nghe Tiếng Anh, Đoạn Văn & Hình Ảnh Việt ↔ Anh</h1>
       <div class="header-actions">
         <button id="btnQuickImgTranslate" class="btn-img-top" type="button">📷 DỊCH BẰNG HÌNH ẢNH</button>
         <button id="btnOpenGuide" class="btn-guide" type="button">📘 HƯỚNG DẪN</button>
       </div>
     </div>
-    <div class="sub">1. Nghe tiếng Anh → Chữ tiếng Việt | 2. Đoạn văn Việt → Chữ Anh | 3. Chụp camera hoặc chọn ảnh để dịch chữ trên ảnh</div>
+    <div class="sub">1. Nghe tiếng Anh → Chữ tiếng Việt | 2. Đoạn văn Việt → Chữ Anh | 3. Chụp camera hoặc chọn ảnh để dịch chữ trên ảnh.</div>
 
-    <div id="envBanner" class="banner">Đang kiểm tra trình duyệt...</div>
+    
 
     <div class="grid">
       <!-- CHỨC NĂNG 1: NGHE TIẾNG ANH -> HIỆN CHỮ TIẾNG VIỆT TỪNG CÂU -->
@@ -347,7 +347,7 @@
         <div>
           <div class="label">
             <span>Đoạn văn tiếng Việt (nhập chữ hoặc bấm mic để đọc thêm):</span>
-            <button id="btnClearViInput" class="btn-sec" type="button" style="padding: 3px 8px; font-size: 0.76rem;">Xóa đoạn Việt</button>
+            <button id="btnClearViInput" class="btn-sec" type="button" style="padding: 3px 8px; font-size: 0.76rem;">Xóa đoạn tiếng Việt</button>
           </div>
           <textarea id="viParagraphInput" placeholder="Nhập đoạn văn tiếng Việt vào đây, hoặc bấm nút '🎤 Đọc đoạn tiếng Việt' bên dưới để đọc nhiều câu liên tiếp..."></textarea>
         </div>
@@ -360,7 +360,7 @@
         <div>
           <div class="label">
             <span>Bản dịch tiếng Anh (chữ):</span>
-            <button id="btnCopyEnOut" class="btn-sec" type="button" style="padding: 3px 8px; font-size: 0.76rem;">📋 Sao chép EN</button>
+            <button id="btnCopyEnOut" class="btn-sec" type="button" style="padding: 3px 8px; font-size: 0.76rem;">📋 Sao chép tiếng Anh</button>
           </div>
           <div id="enParagraphOutput" class="box result-en" style="min-height: 110px;">—</div>
         </div>
@@ -451,13 +451,7 @@
     (function checkEnv() {
       const proto = location.protocol;
       const hasSR = Boolean(SpeechRecognition);
-      if (proto === "file:" || !hasSR) {
-        envBanner.classList.add("banner-warn");
-        envBanner.textContent = "Giao thức: " + proto + " | Nhận diện giọng nói: " + (hasSR ? "Có" : "Không") + " — Nếu micro không chạy ở file://, hãy chạy qua http://localhost hoặc https://.";
-      } else {
-        envBanner.textContent = "Sẵn sàng (" + proto + ") | Nhận diện giọng nói: Có | Dịch văn bản & Hình ảnh: Sẵn sàng";
-      }
-    })();
+          })();
 
     btnOpenGuide.addEventListener("click", () => guideModal.classList.add("open"));
     btnCloseGuide.addEventListener("click", () => guideModal.classList.remove("open"));
